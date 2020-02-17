@@ -1,2 +1,4 @@
 include ':app'
+include ':aars'
+include ':models'
 rootProject.name='VoiceCode'

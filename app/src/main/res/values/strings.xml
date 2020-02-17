@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VoiceCode</string>
+    <string name="java_caption">Try to give modifier and  basic type for example \"public boolean\"</string>
 </resources>

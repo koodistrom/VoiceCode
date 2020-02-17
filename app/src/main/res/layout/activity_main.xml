@@ -7,25 +7,35 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:id="@+id/info_text"
+        android:textColor="@android:color/white"
+        android:background="@color/colorAccent"/>
+
     <EditText
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:text="Hello World!"
+
         android:padding="3mm"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:inputType="none"
+
+        android:background="@color/colorBackground"
+        android:textColor="@android:color/white"
         android:gravity="start"
         android:id="@+id/code_text"/>
 
-    <Button
+    <ToggleButton
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="speak"
+        android:textOff="voice controll off"
+        android:textColor="@android:color/white"
         android:id="@+id/speak_button"
-        android:onClick="displaySpeechRecognizer"/>
+        android:onClick="startSpeechRecognizer"
+        android:background="@color/colorAccent"/>
+
+
 
 
 
