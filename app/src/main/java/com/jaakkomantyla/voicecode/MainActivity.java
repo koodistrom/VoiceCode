@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements
 
         recognizer = SpeechRecognizerSetup.defaultSetup()
                 .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+                .setDictionary(new File(assetsDir, "java.dict"))
 
                 .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
 
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onResult(Hypothesis hypothesis) {
 
         if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
+            String text = VoiceParsingUtils.checkForKeyWords(hypothesis.getHypstr())+" ";
 
             int start = Math.max(codeText.getSelectionStart(), 0);
             int end = Math.max(codeText.getSelectionEnd(), 0);

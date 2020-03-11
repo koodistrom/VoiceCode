@@ -13,7 +13,7 @@
         android:textColor="@android:color/white"
         android:background="@color/colorAccent"/>
 
-    <EditText
+    <com.jaakkomantyla.voicecode.CodeEditText
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
