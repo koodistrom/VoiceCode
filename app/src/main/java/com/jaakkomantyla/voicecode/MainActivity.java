@@ -15,6 +15,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ToggleButton;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import edu.cmu.pocketsphinx.*;
@@ -22,6 +28,8 @@ import edu.cmu.pocketsphinx.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final String JAVA_STATEMENT = "java";
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +63,18 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         codeText = findViewById(R.id.code_text);
         codeText.setShowSoftInputOnFocus(false);
+        codeText.setText(R.string.test_code);
+
+        String testCode = getString(R.string.test_code);
+
+
+        CompilationUnit testParse = StaticJavaParser.parse(testCode);
+
+        Node node = testParse.findRootNode();
+        System.out.println(node.toString());
+
+
+
         infoText = findViewById(R.id.info_text);
 
         speechRecognition = findViewById(R.id.speak_button);

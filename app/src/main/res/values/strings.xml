@@ -1,4 +1,31 @@
 <resources>
     <string name="app_name">VoiceCode</string>
     <string name="java_caption">Try to give modifier and  basic type for example \"public boolean\"</string>
+
+    <string name="test_code">
+        public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {\n
+\n
+        private Rect rect;\n
+        private Paint paint;\n
+\n
+        public CodeEditText(Context context, AttributeSet attrs) {\n
+            super(context, attrs);\n
+            rect = new Rect();\n
+            paint = new Paint();\n
+            paint.setStyle(Paint.Style.FILL);\n
+            paint.setColor(Color.WHITE);\n
+            paint.setTextSize(15);\n
+        }\n
+\n
+        @Override\n
+        protected void onDraw(Canvas canvas) {\n
+            int baseline = getBaseline();\n
+            for (int i = 0; i = getLineCount(); i++) {\n
+                canvas.drawText(\"\" + (i+1), rect.left, baseline, paint);\n
+                baseline += getLineHeight();\n
+            }\n
+            super.onDraw(canvas);\n
+        }\n
+    }\n
+    </string>
 </resources>
