@@ -2,7 +2,11 @@ package com.jaakkomantyla.voicecode;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
     private static final int SPEECH_REQUEST_CODE = 0;
-    private EditText codeText;
+    private CodeEditText codeText;
     private TextView infoText;
     private ToggleButton speechRecognition;
 
@@ -63,16 +67,6 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         codeText = findViewById(R.id.code_text);
         codeText.setShowSoftInputOnFocus(false);
-        codeText.setText(R.string.test_code);
-
-        String testCode = getString(R.string.test_code);
-
-
-        CompilationUnit testParse = StaticJavaParser.parse(testCode);
-
-        Node node = testParse.findRootNode();
-        System.out.println(node.toString());
-
 
 
         infoText = findViewById(R.id.info_text);

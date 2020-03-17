@@ -3,6 +3,10 @@
     <string name="java_caption">Try to give modifier and  basic type for example \"public boolean\"</string>
 
     <string name="test_code">
+        package com.jaakkomantyla.voicecode;\n
+        \n
+        import android.content.Context;\n
+        \n
         public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {\n
 \n
         private Rect rect;\n
@@ -23,7 +27,10 @@
             for (int i = 0; i = getLineCount(); i++) {\n
                 canvas.drawText(\"\" + (i+1), rect.left, baseline, paint);\n
                 baseline += getLineHeight();\n
-            }\n
+                if(1==3){\n
+                    String str = \"huhuu\";\n
+                }\n
+        }\n
             super.onDraw(canvas);\n
         }\n
     }\n
