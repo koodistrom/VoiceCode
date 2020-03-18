@@ -37,8 +37,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements
-        RecognitionListener {
+public class MainActivity extends AppCompatActivity  {
 
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
@@ -48,10 +47,11 @@ public class MainActivity extends AppCompatActivity implements
     private ToggleButton speechRecognition;
 
     private SpeechRecognizer recognizer;
+    private VoiceCodeRecognitionListener recognitionListener;
     private HashMap<String, Integer> captions;
 
 
-    private static final String JAVA_STATEMENT = "java";
+    public static final String JAVA_STATEMENT = "java";
 
 
 
@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements
 
 
         infoText = findViewById(R.id.info_text);
+
+        recognitionListener = new VoiceCodeRecognitionListener(this);
 
         speechRecognition = findViewById(R.id.speak_button);
         speechRecognition.setEnabled(false);
@@ -157,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
 
                 .getRecognizer();
-        recognizer.addListener(this);
+        recognizer.addListener(recognitionListener);
 
         /* In your application you might not need to add all those searches.
           They are added here for demonstration. You can leave just one.
@@ -172,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    private void switchSearch(String searchName) {
+    public void switchSearch(String searchName) {
         recognizer.stop();
 
         // If we are not spotting, start listening with timeout (10000 ms or 10 seconds). ???
@@ -184,55 +186,21 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    @Override
-    public void onBeginningOfSpeech() {
-        Toast toast=Toast.makeText(getApplicationContext(),"started",Toast.LENGTH_SHORT);
 
-        toast.show();
+
+    public TextView getInfoText() {
+        return infoText;
     }
 
-    @Override
-    public void onEndOfSpeech() {
 
+    public CodeEditText getCodeText() {
+        return codeText;
     }
 
-    @Override
-    public void onPartialResult(Hypothesis hypothesis) {
-
-        if (hypothesis != null) {
-
-
-            Toast toast = Toast.makeText(getApplicationContext(), "partial result: " + hypothesis.getHypstr(), Toast.LENGTH_SHORT);
-            toast.show();
-
-            switchSearch(JAVA_STATEMENT);
-        }
+    public void setCodeText(CodeEditText codeText) {
+        this.codeText = codeText;
     }
 
-    @Override
-    public void onResult(Hypothesis hypothesis) {
-
-        if (hypothesis != null) {
-            String text = VoiceParsingUtils.checkForKeyWords(hypothesis.getHypstr())+" ";
-
-            int start = Math.max(codeText.getSelectionStart(), 0);
-            int end = Math.max(codeText.getSelectionEnd(), 0);
-            codeText.getText().replace(Math.min(start, end), Math.max(start, end),
-                    text, 0, text.length());
-
-
-        }
-    }
-
-    @Override
-    public void onError(Exception e) {
-        ((TextView) findViewById(R.id.info_text)).setText(e.getMessage());
-    }
-
-    @Override
-    public void onTimeout() {
-
-    }
 
     @Override
     public void onDestroy() {
@@ -243,13 +211,4 @@ public class MainActivity extends AppCompatActivity implements
             recognizer.shutdown();
         }
     }
-
-
-    public TextView getInfoText() {
-        return infoText;
-    }
-
-
-
-
 }
