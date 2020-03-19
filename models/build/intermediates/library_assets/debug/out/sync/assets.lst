@@ -2,6 +2,7 @@ cmudict-en-us.dict
 digits.gram
 en-phone.dmp
 en-us-ptm/README
+en-us-ptm/commands.gram
 en-us-ptm/feat.params
 en-us-ptm/mdef
 en-us-ptm/means

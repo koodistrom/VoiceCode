@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
     public static final String JAVA_STATEMENT = "java";
-
+    public static final String PHONE_SEARCH = "phone";
 
 
 
@@ -161,11 +161,9 @@ public class MainActivity extends AppCompatActivity  {
                 .getRecognizer();
         recognizer.addListener(recognitionListener);
 
-        /* In your application you might not need to add all those searches.
-          They are added here for demonstration. You can leave just one.
-         */
-
-
+        // Phonetic search
+        File phoneticModel = new File(assetsDir, "en-phone.dmp");
+        recognizer.addAllphoneSearch(PHONE_SEARCH, phoneticModel);
 
         // Create grammar-based search for digit recognition
         File javaGrammar = new File(assetsDir, "java_keywords.jsgf");

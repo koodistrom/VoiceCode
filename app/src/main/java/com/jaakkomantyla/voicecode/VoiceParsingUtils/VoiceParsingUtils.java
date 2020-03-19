@@ -1,4 +1,4 @@
-package com.jaakkomantyla.voicecode;
+package com.jaakkomantyla.voicecode.VoiceParsingUtils;
 
 public class VoiceParsingUtils {
 
