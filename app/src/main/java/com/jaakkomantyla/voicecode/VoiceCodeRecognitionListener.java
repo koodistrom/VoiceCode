@@ -3,7 +3,7 @@ package com.jaakkomantyla.voicecode;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jaakkomantyla.voicecode.VoiceParsingUtils.VoiceParsingUtils;
+import com.jaakkomantyla.voicecode.VoiceParsingUtils.VoiceParser;
 
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
@@ -11,8 +11,11 @@ import edu.cmu.pocketsphinx.RecognitionListener;
 public class VoiceCodeRecognitionListener implements RecognitionListener {
 
     private MainActivity context;
+    private VoiceParser voiceParser;
     VoiceCodeRecognitionListener(MainActivity context){
+
         this.context = context;
+        voiceParser = new VoiceParser(context);
     }
 
     @Override
@@ -43,9 +46,7 @@ public class VoiceCodeRecognitionListener implements RecognitionListener {
     public void onResult(Hypothesis hypothesis) {
 
         if (hypothesis != null) {
-            String text = VoiceParsingUtils.checkForKeyWords(hypothesis.getHypstr())+" ";
-
-            addToCursorLocation(text);
+            voiceParser.parseToCode(hypothesis.getHypstr());
 
         }
     }
@@ -61,13 +62,7 @@ public class VoiceCodeRecognitionListener implements RecognitionListener {
     }
 
 
-    private void addToCursorLocation(String text){
 
-        int start = Math.max(context.getCodeText().getSelectionStart(), 0);
-        int end = Math.max(context.getCodeText().getSelectionEnd(), 0);
-        context.getCodeText().getText().replace(Math.min(start, end), Math.max(start, end),
-                text, 0, text.length());
-    }
 
 
 }

@@ -76,13 +76,11 @@ public class MainActivity extends AppCompatActivity  {
         speechRecognition = findViewById(R.id.speak_button);
         speechRecognition.setEnabled(false);
 
-        speechRecognition.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    switchSearch(JAVA_STATEMENT);
-                } else {
-                    recognizer.stop();
-                }
+        speechRecognition.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                switchSearch(JAVA_STATEMENT);
+            } else {
+                recognizer.stop();
             }
         });
 

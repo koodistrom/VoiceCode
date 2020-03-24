@@ -19,7 +19,7 @@ grammar javaKeyWords;
 
 <classDeclaration> = class;
 
-public <words> = <classDeclaration> | <symbol> | <numeric> | <basicType> | <testVariables> |
+public <words> = <classDeclaration> | <symbol> | <number> | <basicType> | <testVariables> |
         <assignmentOperator> | <modifier>;
 
 /*public <def> = <modifier> <basicType>;*/
