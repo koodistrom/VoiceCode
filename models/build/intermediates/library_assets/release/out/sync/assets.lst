@@ -1,0 +1,17 @@
+cmudict-en-us.dict
+digits.gram
+en-phone.dmp
+en-us-ptm/README
+en-us-ptm/commands.gram
+en-us-ptm/feat.params
+en-us-ptm/mdef
+en-us-ptm/means
+en-us-ptm/noisedict
+en-us-ptm/sendump
+en-us-ptm/transition_matrices
+en-us-ptm/variances
+java.dict
+java_keywords.jsgf
+menu.gram
+weather.dmp
+workinprogress.txt

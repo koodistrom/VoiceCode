@@ -1,0 +1,10 @@
+;;; Symbols
+{} B R EY S IH Z
+() B R AE K AH T S
+()(2) B R AE K IH T S
+/n L AY N CH EY N JH
+;/n S EH M IY K OW L AH N
+;/n(2) S EH M AH K OW L AH N
+
+;;; AssignmentOperators
+=  IY K W AH L Z
