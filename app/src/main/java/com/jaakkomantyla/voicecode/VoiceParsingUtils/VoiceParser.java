@@ -6,51 +6,101 @@ import com.jaakkomantyla.voicecode.MainActivity;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VoiceParser {
 
     public List<String> createClass  = extractWords("create class");
     private MainActivity context;
+    private int lastTokenLength;
+    private  boolean lastGoInBraces;
+    private Logger logger;
 
     public VoiceParser(MainActivity context){
+        logger = Logger.getLogger(VoiceParser.class.getName());
         this.context = context;
+        lastTokenLength = 0;
+        lastGoInBraces = false;
     }
-
+/*TODO:  recognizer to service, syntax highlighting on the go, way out from brakets, indent, +-,
+ */
 
     public  void parseToCode(String  input){
-
-        /*??
-        if(input.length() > 6 && input.substring(0,6).equals("numeric")){
-            return input.substring(7);
-        }
-        */
         String text;
         boolean goInBraces = false;
-        switch(input)
-        {
-            case "semi-colon":
-                text =  ";\n";
-                break;
-            case "braces":
-                text =  "{}";
-                goInBraces = true;
-                break;
-            case "brackets":
-                text =  "()";
-                goInBraces = true;
-                break;
+        logger.log(Level.INFO, "input: " +input);
+        if(input.length() > 6 && input.substring(0,6).equals("number")){
+            text = input.substring(7);
+        }else if (input.equals("undo")){
 
-            case "linechange":
-                text =  "\n";
-                break;
-            case "equals":
-                text =  "=";
-                break;
-            default:
-                text =  input;
+            int offset = 0;
+            if(lastGoInBraces){
+                offset = 2;
+            }
+            removefromCurrentPos(lastTokenLength, offset);
+            text="";
+        }else{
+
+            switch (input) {
+                //String
+                case "string":
+                    text = "String";
+                    break;
+                //symbols
+                case "semi-colon":
+                    text = ";";
+                    break;
+                case "braces":
+                    text = "{}";
+                    goInBraces = true;
+                    break;
+                case "brackets":
+                    text = "()";
+                    goInBraces = true;
+                    break;
+
+                case "corner brackets":
+                    text = "[]";
+                    goInBraces = true;
+                    break;
+
+                case "linechange":
+                    text = "\n";
+                    break;
+
+                //assingment operators
+                case "equals":
+                    text = "=";
+                    break;
+
+                //infixOperators
+                case "is less":
+                    text = "<";
+                    break;
+                case "is greater":
+                    text = ">";
+                    break;
+
+
+
+                //statements
+
+                case "if statement":
+                case "for statement":
+                case "while statement":
+                    text = input.split(" ")[0] + "()";
+                    goInBraces = true;
+                    break;
+
+                default:
+                    text = input;
+            }
+            text +=" ";
         }
 
-        text +=" ";
+        lastTokenLength = text.length();
+        lastGoInBraces = goInBraces;
 
         addToCursorLocation(text);
         if(goInBraces){
@@ -213,5 +263,10 @@ public class VoiceParser {
     private void moveCursorRelativeToCurrentPos(int steps){
         int currentPos =context.getCodeText().getSelectionStart();
         context.getCodeText().setSelection(currentPos+steps);
+    }
+
+    private void removefromCurrentPos(int numOfChars, int offset){
+        int currentPos =context.getCodeText().getSelectionStart();
+        context.getCodeText().getText().delete(currentPos-numOfChars+offset, currentPos+offset);
     }
 }

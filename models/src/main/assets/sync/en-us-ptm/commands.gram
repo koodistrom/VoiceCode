@@ -2,6 +2,6 @@
 
 grammar menu;
 
-public <create_class> = create class <class_declaration;
+public <create_class> = create class <class_declaration>;
 
 <class_declaration> = [public] [static] class;

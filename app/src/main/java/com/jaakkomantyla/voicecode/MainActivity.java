@@ -10,6 +10,8 @@ import android.text.style.ForegroundColorSpan;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -24,9 +26,13 @@ import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.jaakkomantyla.voicecode.VoiceParsingUtils.VoiceParser;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import edu.cmu.pocketsphinx.*;
 
 import java.io.File;
@@ -49,10 +55,10 @@ public class MainActivity extends AppCompatActivity  {
     private SpeechRecognizer recognizer;
     private VoiceCodeRecognitionListener recognitionListener;
     private HashMap<String, Integer> captions;
-
-
+    private RecognizerViewModel recognizerViewModel;
     public static final String JAVA_STATEMENT = "java";
     public static final String PHONE_SEARCH = "phone";
+    private VoiceParser voiceParser;
 
 
 
@@ -63,24 +69,27 @@ public class MainActivity extends AppCompatActivity  {
         captions = new HashMap<>();
         captions.put(JAVA_STATEMENT, R.string.java_caption);
 
-
         setContentView(R.layout.activity_main);
         codeText = findViewById(R.id.code_text);
         codeText.setShowSoftInputOnFocus(false);
-
-
         infoText = findViewById(R.id.info_text);
 
-        recognitionListener = new VoiceCodeRecognitionListener(this);
+        voiceParser = new VoiceParser(this);
+        recognizerViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(getApplication())).get(RecognizerViewModel.class);
+        createObservers();
+
+        //recognitionListener = new VoiceCodeRecognitionListener(this);
 
         speechRecognition = findViewById(R.id.speak_button);
-        speechRecognition.setEnabled(false);
+        speechRecognition.setEnabled(recognizerViewModel.getReady().getValue());
 
         speechRecognition.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                switchSearch(JAVA_STATEMENT);
+            if(!speechRecognition.isPressed()){
+
+            } else if (isChecked) {
+                recognizerViewModel.switchSearch(JAVA_STATEMENT);
             } else {
-                recognizer.stop();
+                recognizerViewModel.getRecognizer().stop();
             }
         });
 
@@ -89,11 +98,29 @@ public class MainActivity extends AppCompatActivity  {
 
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
-        new SetupTask(this).execute();
+        //new SetupTask(this).execute();
 
     }
 
+    private void createObservers(){
+        recognizerViewModel.getUtterance().observe(this, (utterance)->{
+            voiceParser.parseToCode(utterance);
+        });
 
+        recognizerViewModel.getInfo().observe(this, (info)->{
+            infoText.setText(info);
+        });
+        recognizerViewModel.getToastText().observe(this, (text)->{
+            Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+            toast.show();
+        });
+
+        recognizerViewModel.getReady().observe(this, (b)->{
+            findViewById(R.id.speak_button).setEnabled(b);
+        });
+
+
+    }
 
     public  void startSpeechRecognizer(View v){
 
@@ -171,14 +198,17 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void switchSearch(String searchName) {
-        recognizer.stop();
 
-        // If we are not spotting, start listening with timeout (10000 ms or 10 seconds). ???
+            recognizer.stop();
 
-        recognizer.startListening(searchName);
 
-        String caption = getResources().getString(captions.get(searchName));
-        ((TextView) findViewById(R.id.info_text)).setText(caption);
+            // If we are not spotting, start listening with timeout (10000 ms or 10 seconds). ???
+
+            recognizer.startListening(searchName);
+
+            String caption = getResources().getString(captions.get(searchName));
+            ((TextView) findViewById(R.id.info_text)).setText(caption);
+
     }
 
 
@@ -196,6 +226,7 @@ public class MainActivity extends AppCompatActivity  {
     public void setCodeText(CodeEditText codeText) {
         this.codeText = codeText;
     }
+
 
 
     @Override

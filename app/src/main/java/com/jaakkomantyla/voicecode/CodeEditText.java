@@ -19,6 +19,7 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
         private CompilationUnit testParse;
         private SyntaxHighlighterVisitor highlighterVisitor;
 
+
         public CodeEditText(Context context, AttributeSet attrs) {
             super(context, attrs);
             rect = new Rect();

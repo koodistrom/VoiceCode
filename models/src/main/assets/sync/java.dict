@@ -8,6 +8,7 @@ long L AO NG
 float F L OW T
 double D AH B AH L
 boolean B UW L IY AH N
+string S T R IH NG
 
 ;;; modifiers
 annotation AE N AH T EY SH AH N
@@ -27,14 +28,35 @@ strictfp S T R IH K T EH F P IY
 
 ;;;class declarations
 class K L AE S
+enum EH N UW M
+interface IH N T ER F EY S
+interface(2) IH N ER F EY S
 
 ;;; AssignmentOperators
 equals  IY K W AH L Z
+
+;;; InfixOperators
+less L EH S
+or AO R
+or(2) ER
+equal IY K W AH L
+greater G R EY T ER
+is IH Z
+
+;;; Statements
+if IH F
+for F AO R
+for(2) F ER
+for(3) F R ER
+while W AY L
+while(2) HH W AY L
+statement S T EY T M AH N T
 
 ;;; Test variable names
 test T EH S T
 x EH K S
 numbers N AH M B ER Z
+arguments AA R G Y AH M AH N T S
 
 ;;; Numbers
 0 Z IH R OW
@@ -48,6 +70,10 @@ numbers N AH M B ER Z
 8 EY T
 9 N AY N
 
+;;; Misc
+void V OY D
+main M EY N
+
 ;;; Symbols
 braces B R EY S IH Z
 brackets B R AE K AH T S
@@ -55,6 +81,9 @@ brackets(2) B R AE K IH T S
 linechange L AY N CH EY N JH
 semi-colon S EH M IY K OW L AH N
 semi-colon(2) S EH M AH K OW L AH N
+corner K AO R N ER
 
 ;;;voice code keywords
 numeric N UW M EH R IH K
+undo AH N D UW
+number N AH M B ER

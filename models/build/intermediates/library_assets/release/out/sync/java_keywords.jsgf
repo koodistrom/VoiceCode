@@ -1,26 +1,40 @@
 #JSGF V1.0;
-
+/*TODO break java, other and app command tokens to own files*/
 grammar javaKeyWords;
 
+/* JAVA tokens*/
 
 <basicType> = byte | short | char | int | long | float | double | boolean;
 
 <modifier> = annotation | public | protected | private | static | abstract | final | native |
     synchronized | transient | volatile | strictfp;
 
-<number> = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-<numeric> = numeric <number>+ ;
-
 <assignmentOperator> = equals;
 
+<infixOperator> = less or equal | greater or equal;
+
+<classDeclaration> = class | interface | enum;
+
+<statement> = if | for | while;
+
+/*other than java */
+
+<number> = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+<numeric> = numeric <number>+ ;
+<testVariable> = test | x | numbers;
 <symbol> = braces | brackets | semi-colon | linechange;
 
-<testVariables> = test | x | numbers;
 
-<classDeclaration> = class;
+/*main rule read by the app*/
 
-public <words> = <classDeclaration> | <symbol> | <number> | <basicType> | <testVariables> |
-        <assignmentOperator> | <modifier>;
+public <words> = <classDeclaration> | <symbol> | <number> | <basicType> | <testVariable> |
+        <assignmentOperator> | <modifier> | <statement> | <infixOperator>;
+
+
+
+
+
+/*work on progress:*/
 
 /*public <def> = <modifier> <basicType>;*/
 
