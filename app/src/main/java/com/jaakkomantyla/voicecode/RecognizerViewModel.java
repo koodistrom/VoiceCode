@@ -18,8 +18,6 @@ import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
 public class RecognizerViewModel extends AndroidViewModel implements Runnable, RecognitionListener {
 
-    private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-    private static final int SPEECH_REQUEST_CODE = 0;
     private SpeechRecognizer recognizer;
     public static final String JAVA_STATEMENT = "java";
     public static final String PHONE_SEARCH = "phone";
@@ -102,7 +100,7 @@ public class RecognizerViewModel extends AndroidViewModel implements Runnable, R
 
         recognizer.startListening(searchName);
 
-        String caption = getApplication().getResources().getString(captions.get(searchName));
+        info.setValue(getApplication().getResources().getString(captions.get(searchName)));
 
         //((TextView) findViewById(R.id.info_text)).setText(caption);
     }

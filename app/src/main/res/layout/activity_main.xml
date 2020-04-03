@@ -32,7 +32,6 @@
         android:textOff="voice controll off"
         android:textColor="@android:color/white"
         android:id="@+id/speak_button"
-        android:onClick="startSpeechRecognizer"
         android:background="@color/colorAccent"/>
 
 

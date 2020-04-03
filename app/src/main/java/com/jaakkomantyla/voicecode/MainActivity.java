@@ -51,9 +51,6 @@ public class MainActivity extends AppCompatActivity  {
     private CodeEditText codeText;
     private TextView infoText;
     private ToggleButton speechRecognition;
-
-    private SpeechRecognizer recognizer;
-    private VoiceCodeRecognitionListener recognitionListener;
     private HashMap<String, Integer> captions;
     private RecognizerViewModel recognizerViewModel;
     public static final String JAVA_STATEMENT = "java";
@@ -84,9 +81,8 @@ public class MainActivity extends AppCompatActivity  {
         speechRecognition.setEnabled(recognizerViewModel.getReady().getValue());
 
         speechRecognition.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(!speechRecognition.isPressed()){
 
-            } else if (isChecked) {
+            if (isChecked) {
                 recognizerViewModel.switchSearch(JAVA_STATEMENT);
             } else {
                 recognizerViewModel.getRecognizer().stop();
@@ -95,10 +91,6 @@ public class MainActivity extends AppCompatActivity  {
 
 
         checkRecordingPermission();
-
-        // Recognizer initialization is a time-consuming and it involves IO,
-        // so we execute it in async task
-        //new SetupTask(this).execute();
 
     }
 
@@ -119,12 +111,8 @@ public class MainActivity extends AppCompatActivity  {
             findViewById(R.id.speak_button).setEnabled(b);
         });
 
-
     }
 
-    public  void startSpeechRecognizer(View v){
-
-    }
 
     private void checkRecordingPermission(){
         // Check if user has given permission to record audio
@@ -134,84 +122,6 @@ public class MainActivity extends AppCompatActivity  {
             return;
         }
     }
-
-
-    private static class SetupTask extends AsyncTask<Void, Void, Exception> {
-        WeakReference<MainActivity> activityReference;
-        SetupTask(MainActivity activity) {
-            this.activityReference = new WeakReference<>(activity);
-        }
-        @Override
-        protected Exception doInBackground(Void... params) {
-            try {
-                Assets assets = new Assets(activityReference.get());
-                File assetDir = assets.syncAssets();
-                activityReference.get().setupRecognizer(assetDir);
-            } catch (IOException e) {
-                System.out.println("virhe!!! "+e);
-                return e;
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Exception result) {
-            String initInfo;
-            if (result != null) {
-                initInfo = "Failed to init recognizer " + result;
-
-            } else {
-
-                initInfo = "Recognizer initialized";
-
-            }
-
-            activityReference.get().getInfoText()
-                    .setText(initInfo);
-
-            activityReference.get().findViewById(R.id.speak_button)
-                    .setEnabled(true);
-        }
-    }
-
-    private void setupRecognizer(File assetsDir) throws IOException {
-        // The recognizer can be configured to perform multiple searches
-        // of different kind and switch between them
-
-        recognizer = SpeechRecognizerSetup.defaultSetup()
-                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                .setDictionary(new File(assetsDir, "java.dict"))
-
-                .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
-
-                .getRecognizer();
-        recognizer.addListener(recognitionListener);
-
-        // Phonetic search
-        File phoneticModel = new File(assetsDir, "en-phone.dmp");
-        recognizer.addAllphoneSearch(PHONE_SEARCH, phoneticModel);
-
-        // Create grammar-based search for digit recognition
-        File javaGrammar = new File(assetsDir, "java_keywords.jsgf");
-        recognizer.addGrammarSearch(JAVA_STATEMENT, javaGrammar);
-
-
-    }
-
-    public void switchSearch(String searchName) {
-
-            recognizer.stop();
-
-
-            // If we are not spotting, start listening with timeout (10000 ms or 10 seconds). ???
-
-            recognizer.startListening(searchName);
-
-            String caption = getResources().getString(captions.get(searchName));
-            ((TextView) findViewById(R.id.info_text)).setText(caption);
-
-    }
-
-
 
 
     public TextView getInfoText() {
@@ -233,9 +143,8 @@ public class MainActivity extends AppCompatActivity  {
     public void onDestroy() {
         super.onDestroy();
 
-        if (recognizer != null) {
-            recognizer.cancel();
-            recognizer.shutdown();
+        if (recognizerViewModel.getRecognizer() != null) {
+            recognizerViewModel.getRecognizer().stop();
         }
     }
 }
