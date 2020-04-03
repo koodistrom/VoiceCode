@@ -31,6 +31,8 @@ class K L AE S
 enum EH N UW M
 interface IH N T ER F EY S
 interface(2) IH N ER F EY S
+extends IH K S T EH N D Z
+implements IH M P L AH M AH N T S
 
 ;;; AssignmentOperators
 equals  IY K W AH L Z
@@ -42,6 +44,16 @@ or(2) ER
 equal IY K W AH L
 greater G R EY T ER
 is IH Z
+multiply M AH L T AH P L AY
+divide D IH V AY D
+logical L AA JH IH K AH L
+and AH N D
+and(2) AE N D
+or AO R
+or(2) ER
+modulus M AO JH Y UW L AH S
+modulus(2) M AO JH UW L AH S
+not N AA T
 
 ;;; Statements
 if IH F
@@ -51,12 +63,19 @@ for(3) F R ER
 while W AY L
 while(2) HH W AY L
 statement S T EY T M AH N T
+do D UW
+else EH L S
+switch S W IH CH
+try T R AY
 
 ;;; Test variable names
 test T EH S T
 x EH K S
 numbers N AH M B ER Z
 arguments AA R G Y AH M AH N T S
+hello HH AH L OW
+hello(2) HH EH L OW
+world W ER L D
 
 ;;; Numbers
 0 Z IH R OW
@@ -73,6 +92,26 @@ arguments AA R G Y AH M AH N T S
 ;;; Misc
 void V OY D
 main M EY N
+assert AH S ER T
+break B R EY K
+case K EY S
+catch K AE CH
+continue K AH N T IH N Y UW
+default D IH F AO L T
+finally F AY N AH L IY
+import IH M P AO R T
+instance IH N S T AH N S
+of AH V
+package P AE K AH JH
+package(2) P AE K IH JH
+return R IH T ER N
+return(2) R IY T ER N
+super S UW P ER
+this DH IH S
+throw TH R OW
+throws TH R OW Z
+new N UW
+new(2) N Y UW
 
 ;;; Symbols
 braces B R EY S IH Z
@@ -82,8 +121,19 @@ linechange L AY N CH EY N JH
 semi-colon S EH M IY K OW L AH N
 semi-colon(2) S EH M AH K OW L AH N
 corner K AO R N ER
+plus P L AH S
+minus M AY N AH S
+quotes K W OW T S
+space S P EY S
+colon K OW L AH N
+dot D AA T
 
 ;;;voice code keywords
 numeric N UW M EH R IH K
 undo AH N D UW
 number N AH M B ER
+indent IH N D EH N T
+back B AE K
+forward F AO R W ER D
+delete D IH L IY T
+print P R IH N T

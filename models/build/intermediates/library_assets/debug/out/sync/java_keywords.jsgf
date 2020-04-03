@@ -11,21 +11,23 @@ grammar javaKeyWords;
 
 <assignmentOperator> = equals;
 
-<infixOperator> = is (less | greater);
+<infixOperator> = (is (less | greater)) | multiply | divide | (logical (and | or | not))| modulus;
 
-<classDeclaration> = class | interface | enum;
+<classDeclaration> = class | interface | enum | extends | implements;
 
-<statement> = (if | for | while) statement;
+<statement> = ((if | for | while | else | try) statement) | do while | else if | switch case;
 
-<misc> = void | main;
+<misc> = void | main | assert | break | case | catch | continue | default | finally | import
+| instance of | package | return | super | this | throw | throws | new;
 
 /*other than java */
 
 <number> = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 <numeric> = number <number>+ ;
-<testVariable> = test | x | arguments;
-<symbol> = braces | [corner] brackets | semi-colon | linechange;
-<command> = undo;
+<testVariable> = test | x | arguments | hello | world;
+<symbol> = braces | [corner] brackets | semi-colon | linechange | plus | minus | quotes | space
+| dot | colon;
+<command> = undo | indent | forward | back | delete | print;
 
 
 /*main rule read by the app*/
@@ -44,24 +46,24 @@ public <words> = <classDeclaration> | <symbol> | <numeric> | <basicType> | <test
 
 /*
 
-abstract   continue   for          new         switch
-assert     default    if           package     synchronized
-boolean    do         goto         private     this
-break      double     implements   protected   throw
-byte       else       import       public      throws
-case       enum       instanceof   return      transient
-catch      extends    int          short       try
-char       final      interface    static      void
-class      finally    long         strictfp    volatile
-const      float      native       super       while
+.abstract   .continue   .for          ?new         .switch
+.assert     .default    .if           .package     .synchronized
+.boolean    .do         N goto        .private     .this
+.break      .double     .implements   .protected   .throw
+.byte       .else       .import       .public      .throws
+.case       .enum       .instanceof   .return      .transient
+.catch      .extends    .int          .short       .try
+.char       .final      .interface    .static      .void
+.class      .finally    .long         .strictfp    .volatile
+N const      .float     .native       .super       .while
 
 
 AssignmentOperator:
-    =
-    +=
-    -=
-    *=
-    /=
+.    =
+.    +=
+.    -=
+.    *=
+.    /=
     &=
     |=
     ^=

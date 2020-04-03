@@ -28,6 +28,7 @@ public class RecognizerViewModel extends AndroidViewModel implements Runnable, R
     private MutableLiveData<String> info;
     private MutableLiveData<Boolean> ready;
 
+    //TODO: fix the delay in recognizing start
     public RecognizerViewModel(Application application){
         super(application);
 

@@ -16,6 +16,7 @@ public class VoiceParser {
     private int lastTokenLength;
     private  boolean lastGoInBraces;
     private Logger logger;
+    private String indent = "    ";
 
     public VoiceParser(MainActivity context){
         logger = Logger.getLogger(VoiceParser.class.getName());
@@ -23,11 +24,11 @@ public class VoiceParser {
         lastTokenLength = 0;
         lastGoInBraces = false;
     }
-/*TODO:  recognizer to service, syntax highlighting on the go, way out from brakets, indent, +-,
+/*TODO:  syntax highlighting on the go, proper undo/redo, space,
  */
 
     public  void parseToCode(String  input){
-        String text;
+        String text = "";
         boolean goInBraces = false;
         logger.log(Level.INFO, "input: " +input);
         if(input.length() > 6 && input.substring(0,6).equals("number")){
@@ -39,7 +40,17 @@ public class VoiceParser {
                 offset = 2;
             }
             removefromCurrentPos(lastTokenLength, offset);
-            text="";
+
+        }else if (input.equals("delete")){
+
+            removefromCurrentPos(1, 0);
+
+        }else if (input.equals("back")){
+
+            moveCursorRelativeToCurrentPos(-1);
+        }else if (input.equals("forward")){
+
+            moveCursorRelativeToCurrentPos(1);
         }else{
 
             switch (input) {
@@ -47,6 +58,7 @@ public class VoiceParser {
                 case "string":
                     text = "String";
                     break;
+
                 //symbols
                 case "semi-colon":
                     text = ";";
@@ -65,8 +77,29 @@ public class VoiceParser {
                     goInBraces = true;
                     break;
 
+                case "quotes":
+                    text = "\"\"";
+                    goInBraces = true;
+                    break;
+
+                case "plus":
+                    text = "+";
+                    break;
+
+                case "minus":
+                    text = "-";
+                    break;
+
                 case "linechange":
                     text = "\n";
+                    break;
+
+                case "colon":
+                    text = ":";
+                    break;
+
+                case "dot":
+                    text = ".";
                     break;
 
                 //assingment operators
@@ -82,15 +115,83 @@ public class VoiceParser {
                     text = ">";
                     break;
 
+                case "multiply":
+                    text = "*";
+                    break;
+                case "divide":
+                    text = "/";
+                    break;
 
+                case "logical and":
+                    text = "&&";
+                    break;
+
+                case "logical or":
+                    text = "||";
+                    break;
+
+                case "logical not":
+                    text = "!";
+                    break;
+
+                case "modulus":
+                    text = "%";
+                    break;
+
+                //commands
+                case "indent":
+                    text = indent;
+                    break;
+
+                case "space":
+                    break;
+
+                case "print":
+                    text = "System.out.println()";
+                    goInBraces = true;
+                    break;
 
                 //statements
-
                 case "if statement":
                 case "for statement":
                 case "while statement":
+                case "switch case":
                     text = input.split(" ")[0] + "()";
                     goInBraces = true;
+                    break;
+
+                case "else statement":
+                case "try statement":
+                    text = input.split(" ")[0] + "{}";
+                    goInBraces = true;
+                    break;
+
+                case "do while":
+                    text = "do{\n\n}while()";
+                    goInBraces = true;
+                    break;
+                case "else if":
+                    text = input+"()";
+                    goInBraces = true;
+                    break;
+
+                //misc
+                case "catch":
+                    text = input+"()";
+                    goInBraces = true;
+                    break;
+
+                case "default":
+                    text = input+":";
+                    break;
+
+                case "finally":
+                    text = input+"{}";
+                    goInBraces = true;
+                    break;
+
+                case "instance of":
+                    text = "instanceof";
                     break;
 
                 default:
@@ -262,7 +363,9 @@ public class VoiceParser {
 
     private void moveCursorRelativeToCurrentPos(int steps){
         int currentPos =context.getCodeText().getSelectionStart();
-        context.getCodeText().setSelection(currentPos+steps);
+        if(currentPos+steps<context.getCodeText().length() && currentPos+steps>=0){
+            context.getCodeText().setSelection(currentPos+steps);
+        }
     }
 
     private void removefromCurrentPos(int numOfChars, int offset){
