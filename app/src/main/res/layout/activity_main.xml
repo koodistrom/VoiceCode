@@ -26,15 +26,49 @@
         android:gravity="start"
         android:id="@+id/code_text"/>
 
-    <ToggleButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textOff="voice controll off"
-        android:textColor="@android:color/white"
-        android:id="@+id/speak_button"
-        android:background="@color/colorAccent"/>
 
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4.0">
 
+        <Button android:id="@+id/saveExternalStorage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="SAVE"
+            android:layout_weight="2"/>
+
+        <Button android:id="@+id/getExternalStorage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="LOAD" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4.0">
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textOff="voice controll off"
+            android:textOn="voice controll on"
+            android:layout_weight="2"
+            android:textColor="@android:color/white"
+            android:id="@+id/speak_button"
+            android:background="@color/colorAccent"/>
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textOff="keyboard off"
+            android:textOn="keyboard on"
+            android:layout_weight="2"
+            android:textColor="@android:color/white"
+            android:id="@+id/keyboard_button"
+            android:background="@color/colorAccent"/>
+    </LinearLayout>
 
 
 

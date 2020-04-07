@@ -24,33 +24,35 @@ public class VoiceParser {
         lastTokenLength = 0;
         lastGoInBraces = false;
     }
-/*TODO:  syntax highlighting on the go, proper undo/redo, space,
+/*TODO:  syntax highlighting on the go, proper undo/redo,
  */
 
     public  void parseToCode(String  input){
         String text = "";
         boolean goInBraces = false;
         logger.log(Level.INFO, "input: " +input);
+
         if(input.length() > 6 && input.substring(0,6).equals("number")){
             text = input.substring(7);
+            context.getCodeText().inputText(text);
         }else if (input.equals("undo")){
 
-            int offset = 0;
-            if(lastGoInBraces){
-                offset = 2;
-            }
-            removefromCurrentPos(lastTokenLength, offset);
+            context.getCodeText().undo();
+
+        }else if (input.equals("redo")){
+
+            context.getCodeText().redo();
 
         }else if (input.equals("delete")){
 
-            removefromCurrentPos(1, 0);
+            context.getCodeText().delete();
 
         }else if (input.equals("back")){
 
-            moveCursorRelativeToCurrentPos(-1);
+            context.getCodeText().moveCursorRelativeToCurrentPos(-1);
         }else if (input.equals("forward")){
 
-            moveCursorRelativeToCurrentPos(1);
+            context.getCodeText().moveCursorRelativeToCurrentPos(1);
         }else{
 
             switch (input) {
@@ -198,15 +200,12 @@ public class VoiceParser {
                     text = input;
             }
             text +=" ";
+            context.getCodeText().inputText(text);
+            if(goInBraces){
+                context.getCodeText().moveCursorRelativeToCurrentPos(-2);
+            }
         }
 
-        lastTokenLength = text.length();
-        lastGoInBraces = goInBraces;
-
-        addToCursorLocation(text);
-        if(goInBraces){
-            moveCursorRelativeToCurrentPos(-2);
-        }
     }
 
     public int getNumber(String input) {
@@ -353,23 +352,4 @@ public class VoiceParser {
         return words;
     }
 
-    private void addToCursorLocation(String text){
-
-        int start = Math.max(context.getCodeText().getSelectionStart(), 0);
-        int end = Math.max(context.getCodeText().getSelectionEnd(), 0);
-        context.getCodeText().getText().replace(Math.min(start, end), Math.max(start, end),
-                text, 0, text.length());
-    }
-
-    private void moveCursorRelativeToCurrentPos(int steps){
-        int currentPos =context.getCodeText().getSelectionStart();
-        if(currentPos+steps<context.getCodeText().length() && currentPos+steps>=0){
-            context.getCodeText().setSelection(currentPos+steps);
-        }
-    }
-
-    private void removefromCurrentPos(int numOfChars, int offset){
-        int currentPos =context.getCodeText().getSelectionStart();
-        context.getCodeText().getText().delete(currentPos-numOfChars+offset, currentPos+offset);
-    }
 }

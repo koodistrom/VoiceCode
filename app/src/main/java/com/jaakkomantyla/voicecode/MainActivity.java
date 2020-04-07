@@ -1,48 +1,39 @@
 package com.jaakkomantyla.voicecode;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.AsyncTask;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.widget.CompoundButton;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.OpenableColumns;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ToggleButton;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.jaakkomantyla.voicecode.VoiceParsingUtils.VoiceParser;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import edu.cmu.pocketsphinx.*;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
-import java.util.List;
 
+//TODO: fix sub directory files can't be loaded bug
 public class MainActivity extends AppCompatActivity  {
 
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -51,12 +42,17 @@ public class MainActivity extends AppCompatActivity  {
     private CodeEditText codeText;
     private TextView infoText;
     private ToggleButton speechRecognition;
+    private ToggleButton keyboardTgl;
+    private Button saveButton;
+    private Button loadButton;
     private HashMap<String, Integer> captions;
     private RecognizerViewModel recognizerViewModel;
+    private CodeTextViewModel codeTextViewModel;
     public static final String JAVA_STATEMENT = "java";
     public static final String PHONE_SEARCH = "phone";
     private VoiceParser voiceParser;
-
+    private String fileName = "gg.java";
+    private Uri fileUri;
 
 
     @Override
@@ -75,11 +71,33 @@ public class MainActivity extends AppCompatActivity  {
         recognizerViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(getApplication())).get(RecognizerViewModel.class);
         createObservers();
 
-        //recognitionListener = new VoiceCodeRecognitionListener(this);
+        codeTextViewModel = new ViewModelProvider(this).get(CodeTextViewModel.class);
+        setupSaveButton();
+        setupLoadButton();
+        setupSpeechRecogBtn();
+        setupKeyboardBtn();
+        checkRecordingPermission();
+
+    }
+
+    private void setupKeyboardBtn() {
+
+        keyboardTgl = findViewById(R.id.keyboard_button);
+
+        keyboardTgl.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            if (isChecked) {
+                codeText.setShowSoftInputOnFocus(true);
+            } else {
+                codeText.setShowSoftInputOnFocus(false);
+            }
+        });
+    }
+
+    private void setupSpeechRecogBtn(){
 
         speechRecognition = findViewById(R.id.speak_button);
         speechRecognition.setEnabled(recognizerViewModel.getReady().getValue());
-
         speechRecognition.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
             if (isChecked) {
@@ -89,9 +107,35 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+    }
 
-        checkRecordingPermission();
+    private void setupSaveButton(){
+        saveButton =  findViewById(R.id.saveExternalStorage);
 
+        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
+            saveButton.setEnabled(false);
+            displayToast("Can't use external memory");
+        }
+
+        saveButton.setOnClickListener((v)->{
+            if(fileName == null || fileUri == null){
+                createFile();
+            }
+            else{
+                writeInFile(fileUri, getCodeText().getText().toString());
+            }
+        });
+
+
+    }
+
+    private void setupLoadButton(){
+        loadButton = (Button) findViewById(R.id.getExternalStorage);
+        loadButton.setOnClickListener((v) -> {
+
+               openFile();
+
+        });
     }
 
     private void createObservers(){
@@ -102,15 +146,17 @@ public class MainActivity extends AppCompatActivity  {
         recognizerViewModel.getInfo().observe(this, (info)->{
             infoText.setText(info);
         });
-        recognizerViewModel.getToastText().observe(this, (text)->{
-            Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-            toast.show();
-        });
+        recognizerViewModel.getToastText().observe(this, this::displayToast);
 
         recognizerViewModel.getReady().observe(this, (b)->{
             findViewById(R.id.speak_button).setEnabled(b);
         });
 
+    }
+
+    public void displayToast(String text){
+        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
 
@@ -121,6 +167,138 @@ public class MainActivity extends AppCompatActivity  {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_RECORD_AUDIO);
             return;
         }
+    }
+
+    private void openFile() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/x-java-source,java");
+
+
+        startActivityForResult(intent, 69);
+    }
+
+
+    private void createFile() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/x-java-source,java");
+
+        // Optionally, specify a URI for the directory that should be opened in
+        // the system file picker when your app creates the document.
+        //intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
+
+        startActivityForResult(intent, 420);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        super.onActivityResult(requestCode, resultCode, resultData);
+        if (requestCode == 69 && resultCode == Activity.RESULT_OK) {
+            // The result data contains a URI for the document or directory that
+            // the user selected.
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                // Perform operations on the document using its URI.
+                System.out.println(uri);
+                readFromFile(uri);
+            }
+
+        }else if (requestCode == 420 && resultCode == Activity.RESULT_OK) {
+
+            if (resultData != null) {
+                Uri uri = resultData.getData();
+                // Perform operations on the document using its URI.
+                System.out.println(uri);
+                writeInFile(uri, codeText.getText().toString());
+
+            }
+        }
+    }
+
+    private void writeInFile(@NonNull Uri uri, @NonNull String text) {
+        OutputStream outputStream;
+        try {
+            outputStream = getContentResolver().openOutputStream(uri);
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream));
+            bw.write(text);
+            bw.flush();
+            bw.close();
+
+            setFileNameFromUri(uri);
+            fileUri = uri;
+            displayToast(fileName + " saved to "+uri.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            displayToast("error: "+e);
+        }
+
+    }
+
+    public void readFromFile(@NonNull Uri uri){
+
+
+        try {
+            String data="";
+            InputStream in = getContentResolver().openInputStream(uri);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                data = data + strLine + "\n";
+            }
+            in.close();
+            codeText.setText(data);
+
+
+            setFileNameFromUri(uri);
+            fileUri = uri;
+            displayToast(fileName + " loaded");
+        } catch (IOException e) {
+            e.printStackTrace();
+            displayToast("Error loading file: " + e);
+        }
+
+    }
+
+    private void setFileNameFromUri(Uri uri){
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        fileName =  result;
+    }
+
+
+    private static boolean isExternalStorageReadOnly() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isExternalStorageAvailable() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -137,7 +315,13 @@ public class MainActivity extends AppCompatActivity  {
         this.codeText = codeText;
     }
 
+    public CodeTextViewModel getCodeTextViewModel() {
+        return codeTextViewModel;
+    }
 
+    public void setCodeTextViewModel(CodeTextViewModel codeTextViewModel) {
+        this.codeTextViewModel = codeTextViewModel;
+    }
 
     @Override
     public void onDestroy() {
