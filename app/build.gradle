@@ -23,24 +23,25 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.15.14'
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.15.14'
     compile project(':aars')
     compile project(':models')
     implementation 'com.google.guava:guava:27.0.1-android'
-
     def lifecycle_version = "2.2.0"
     def arch_version = "2.1.0"
-
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
-
-
+    implementation files('libs/eclipse-compiler.jar')
+    implementation files('libs/dx.jar')
+    implementation 'org.apache.commons:commons-lang3:3.4'
 }

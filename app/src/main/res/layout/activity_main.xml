@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/main">
 
 
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -30,7 +31,7 @@
     <LinearLayout
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="4.0">
+        android:weightSum="8.0">
 
         <Button android:id="@+id/saveExternalStorage"
             android:layout_width="0dp"
@@ -42,19 +43,29 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="LOAD" />
+            android:text="OPEN" />
+        <Button android:id="@+id/newFile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="NEW" />
+        <Button android:id="@+id/run"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="RUN" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="4.0">
+        android:weightSum="6.0">
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textOff="voice controll off"
-            android:textOn="voice controll on"
+            android:textOff="voice control off"
+            android:textOn="voice control on"
             android:layout_weight="2"
             android:textColor="@android:color/white"
             android:id="@+id/speak_button"
@@ -67,6 +78,15 @@
             android:layout_weight="2"
             android:textColor="@android:color/white"
             android:id="@+id/keyboard_button"
+            android:background="@color/colorAccent"/>
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textOff="console off"
+            android:textOn="console on"
+            android:layout_weight="2"
+            android:textColor="@android:color/white"
+            android:id="@+id/console_button"
             android:background="@color/colorAccent"/>
     </LinearLayout>
 
