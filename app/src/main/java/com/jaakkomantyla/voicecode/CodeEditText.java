@@ -11,13 +11,15 @@ import com.github.javaparser.ast.CompilationUnit;
 
 import java.util.Stack;
 
+import androidx.annotation.NonNull;
+
 //TODO: fix undo/redo stacks emptying on rotate
 public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
-        private Rect rect;
-        private Paint paint;
-        private CompilationUnit testParse;
-        private SyntaxHighlighterVisitor highlighterVisitor;
+    private Rect rect;
+    private Paint paint;
+    private CompilationUnit testParse;
+    private SyntaxHighlighterVisitor highlighterVisitor;
     private Stack<TextInput> undoStack;
     private Stack<TextInput> redoStack;
 
@@ -60,7 +62,7 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
             undoStack.push(new TextInput(text, getSelectionStart()-text.length()));
             redoStack.empty();
             if(undoStack.size()>10){
-                undoStack.remove(9);
+                undoStack.remove(0);
             }
         }
 
@@ -117,6 +119,13 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
         getText().delete(currentPos-numOfChars+offset, currentPos+offset);
     }
 
+    public void zero(){
+        setText("");
+        redoStack = new Stack<>();
+        undoStack = new Stack<>();
+
+    }
+
     class TextInput{
         int location;
         String text;
@@ -135,6 +144,8 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
             this.length = text.length();
             this.isDeleted = true;
         }
+
+
 
         public int getLocation() {
             return location;
@@ -166,6 +177,12 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
         public void setDeleted(boolean deleted) {
             isDeleted = deleted;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return text;
         }
     }
 

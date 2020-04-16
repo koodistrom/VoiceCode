@@ -25,6 +25,7 @@ import com.jaakkomantyla.voicecode.VoiceParsingUtils.VoiceParser;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -32,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity  {
     private Button openButton;
     private Button newButton;
     private Button runButton;
+    private Button deleteButton;
     private HashMap<String, Integer> captions;
     private RecognizerViewModel recognizerViewModel;
     private CodeTextViewModel codeTextViewModel;
@@ -69,10 +72,12 @@ public class MainActivity extends AppCompatActivity  {
     private Uri fileUri;
     private final int OPEN = 69;
     private final int SAVE = 420;
+    private final int DELETE = 8;
     private final int RUN = 2;
     private FragmentManager fragmentManager;
     private ConsoleFragment consoleFragment;
     private Writer writer;
+    private FileUtils fu;
 
 
     @Override
@@ -91,11 +96,14 @@ public class MainActivity extends AppCompatActivity  {
         recognizerViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(getApplication())).get(RecognizerViewModel.class);
         createObservers();
 
+        fu = new FileUtils(this);
+
         codeTextViewModel = new ViewModelProvider(this).get(CodeTextViewModel.class);
         consoleFragment = new ConsoleFragment();
         setupSaveButton();
         setupOpenButton();
         setupNewButton();
+        setupDeleteButton();
         setupRunButton();
         setupSpeechRecogBtn(savedInstanceState);
         setupKeyboardBtn(savedInstanceState);
@@ -112,17 +120,18 @@ public class MainActivity extends AppCompatActivity  {
         keyboardTgl = findViewById(R.id.keyboard_btn_float);
         setKeyBoardVisible(showKeyboard);
         keyboardTgl.setOnClickListener((v) -> {
-            showKeyboard = !showKeyboard;
-            setKeyBoardVisible(showKeyboard);
+
+            setKeyBoardVisible(!showKeyboard);
         });
     }
 
     private void setKeyBoardVisible(boolean showKeyboard){
+        this.showKeyboard = showKeyboard;
         codeText.setShowSoftInputOnFocus(showKeyboard);
         if (showKeyboard) {
-            keyboardTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_keyboard_24px));
-        } else {
             keyboardTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_keyboard_hide_24px));
+        } else {
+            keyboardTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_keyboard_24px));
             hideKeyboard(this);
         }
     }
@@ -133,13 +142,13 @@ public class MainActivity extends AppCompatActivity  {
         consoleTgl = findViewById(R.id.console_btn_float);
         setConsoleVisible(showConsole);
         consoleTgl.setOnClickListener((v) -> {
-            showConsole = !showConsole;
-            setConsoleVisible(showConsole);
+            setConsoleVisible(!showConsole);
         });
 
     }
 
     private void setConsoleVisible(boolean showConsole){
+        this.showConsole = showConsole;
         if (showConsole) {
 
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -173,7 +182,7 @@ public class MainActivity extends AppCompatActivity  {
         newButton =  findViewById(R.id.newFile);
 
         newButton.setOnClickListener((v)->{
-            getCodeText().setText("");
+            getCodeText().zero();
             fileName = null;
             fileUri = null;
 
@@ -201,9 +210,14 @@ public class MainActivity extends AppCompatActivity  {
     private void setupOpenButton(){
         openButton = (Button) findViewById(R.id.getExternalStorage);
         openButton.setOnClickListener((v) -> {
-
                openFile(OPEN);
+        });
+    }
 
+    private void setupDeleteButton(){
+        deleteButton = (Button) findViewById(R.id.delete);
+        deleteButton.setOnClickListener((v) -> {
+            openFile(DELETE);
         });
     }
 
@@ -311,10 +325,24 @@ public class MainActivity extends AppCompatActivity  {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                FileUtils fu = new FileUtils(this);
+                fu = new FileUtils(this);
                 String path = fu.getPath(uri);
                 JavaCompilingUtils.compile(this, path, writer);
 
+            }
+        }else if (requestCode == DELETE && resultCode == Activity.RESULT_OK) {
+            Uri uri = resultData.getData();
+            File fdelete = new File( fu.getPath(uri));
+
+            if (fdelete.getAbsoluteFile().exists()) {
+                String name = fdelete.getName();
+                if (fdelete.delete()) {
+                    infoText.setText("file Deleted: " + name);
+                } else {
+                    infoText.setText("Unable to delete file: " + name);
+                }
+            }else{
+                infoText.setText("no file found");
             }
         }
 

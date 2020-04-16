@@ -23,7 +23,7 @@
         android:layout_gravity="end"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="150dp"
-        app:srcCompat="@drawable/ic_keyboard_hide_24px"/>
+        app:srcCompat="@drawable/ic_keyboard_24px"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/console_btn_float"
@@ -65,7 +65,7 @@
     <LinearLayout
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="8.0">
+        android:weightSum="10.0">
 
         <Button android:id="@+id/saveExternalStorage"
             android:layout_width="0dp"
@@ -83,6 +83,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:text="NEW" />
+        <Button android:id="@+id/delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="DELETE" />
         <Button android:id="@+id/run"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
