@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Main content -->
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/mic_btn_float"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="50dp"
+        app:srcCompat="@drawable/ic_mic_off_24px"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/keyboard_btn_float"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="150dp"
+        app:srcCompat="@drawable/ic_keyboard_hide_24px"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/console_btn_float"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="250dp"
+        app:srcCompat="@drawable/ic_chrome_reader_mode_24px"/>
+
+
+    <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity"
     android:id="@+id/main">
 
 
@@ -26,6 +59,7 @@
         android:textColor="@android:color/white"
         android:gravity="start"
         android:id="@+id/code_text"/>
+
 
 
     <LinearLayout
@@ -57,39 +91,9 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="6.0">
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textOff="voice control off"
-            android:textOn="voice control on"
-            android:layout_weight="2"
-            android:textColor="@android:color/white"
-            android:id="@+id/speak_button"
-            android:background="@color/colorAccent"/>
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textOff="keyboard off"
-            android:textOn="keyboard on"
-            android:layout_weight="2"
-            android:textColor="@android:color/white"
-            android:id="@+id/keyboard_button"
-            android:background="@color/colorAccent"/>
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textOff="console off"
-            android:textOn="console on"
-            android:layout_weight="2"
-            android:textColor="@android:color/white"
-            android:id="@+id/console_button"
-            android:background="@color/colorAccent"/>
-    </LinearLayout>
 
 
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+
+</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

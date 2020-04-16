@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.OpenableColumns;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ToggleButton;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaakkomantyla.voicecode.VoiceParsingUtils.VoiceParser;
 
 import androidx.core.app.ActivityCompat;
@@ -45,9 +48,13 @@ public class MainActivity extends AppCompatActivity  {
     private static final int SPEECH_REQUEST_CODE = 0;
     private CodeEditText codeText;
     private TextView infoText;
-    private ToggleButton speechRecognitionTgl;
-    private ToggleButton keyboardTgl;
-    private ToggleButton consoleTgl;
+    private FloatingActionButton speechRecognitionTgl;
+    private FloatingActionButton keyboardTgl;
+    private FloatingActionButton consoleTgl;
+    private boolean micOn;
+    private boolean showKeyboard;
+    private boolean showConsole;
+
     private Button saveButton;
     private Button openButton;
     private Button newButton;
@@ -90,9 +97,9 @@ public class MainActivity extends AppCompatActivity  {
         setupOpenButton();
         setupNewButton();
         setupRunButton();
-        setupSpeechRecogBtn();
-        setupKeyboardBtn();
-        setupConsoleBtn();
+        setupSpeechRecogBtn(savedInstanceState);
+        setupKeyboardBtn(savedInstanceState);
+        setupConsoleBtn(savedInstanceState);
         checkRecordingPermission();
 
 
@@ -100,50 +107,63 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
-    private void setupKeyboardBtn() {
-
-        keyboardTgl = findViewById(R.id.keyboard_button);
-
-        keyboardTgl.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-            if (isChecked) {
-                codeText.setShowSoftInputOnFocus(true);
-            } else {
-                codeText.setShowSoftInputOnFocus(false);
-            }
+    private void setupKeyboardBtn(Bundle savedState) {
+        showKeyboard  = savedState != null ? savedState.getBoolean("keyboard"):false;
+        keyboardTgl = findViewById(R.id.keyboard_btn_float);
+        setKeyBoardVisible(showKeyboard);
+        keyboardTgl.setOnClickListener((v) -> {
+            showKeyboard = !showKeyboard;
+            setKeyBoardVisible(showKeyboard);
         });
     }
 
-    private void setupConsoleBtn(){
+    private void setKeyBoardVisible(boolean showKeyboard){
+        codeText.setShowSoftInputOnFocus(showKeyboard);
+        if (showKeyboard) {
+            keyboardTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_keyboard_24px));
+        } else {
+            keyboardTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_keyboard_hide_24px));
+            hideKeyboard(this);
+        }
+    }
 
-        consoleTgl = findViewById(R.id.console_button);
-        consoleTgl.setOnCheckedChangeListener((buttonView, isChecked) -> {
+    private void setupConsoleBtn(Bundle savedState){
 
-            if (isChecked) {
-                System.out.println("ö is checked called");
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.main, consoleFragment, "console");
-                fragmentTransaction.commit();
-
-            } else {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                fragmentTransaction.remove(consoleFragment);
-                fragmentTransaction.commit();
-            }
+        showConsole = savedState != null ? savedState.getBoolean("console"):false;
+        consoleTgl = findViewById(R.id.console_btn_float);
+        setConsoleVisible(showConsole);
+        consoleTgl.setOnClickListener((v) -> {
+            showConsole = !showConsole;
+            setConsoleVisible(showConsole);
         });
 
     }
-    private void setupSpeechRecogBtn(){
 
-        speechRecognitionTgl = findViewById(R.id.speak_button);
+    private void setConsoleVisible(boolean showConsole){
+        if (showConsole) {
+
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.main, consoleFragment, "console");
+            fragmentTransaction.commit();
+
+        } else {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(consoleFragment);
+            fragmentTransaction.commit();
+        }
+    }
+    private void setupSpeechRecogBtn(Bundle savedState){
+        micOn = savedState != null ? savedState.getBoolean("mic"):false;
+        speechRecognitionTgl = findViewById(R.id.mic_btn_float);
         speechRecognitionTgl.setEnabled(recognizerViewModel.getReady().getValue());
-        speechRecognitionTgl.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-            if (isChecked) {
+        speechRecognitionTgl.setOnClickListener((v)-> {
+            micOn = !micOn;
+            if (micOn) {
                 recognizerViewModel.switchSearch(JAVA_STATEMENT);
+                speechRecognitionTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mic_24px));
             } else {
                 recognizerViewModel.getRecognizer().stop();
+                speechRecognitionTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mic_off_24px));
             }
         });
 
@@ -196,7 +216,7 @@ public class MainActivity extends AppCompatActivity  {
 
                 if(fragmentManager.findFragmentByTag("console")==null){
 
-                    consoleTgl.setChecked(true);
+                    consoleTgl.callOnClick();
 
                 }
 
@@ -219,7 +239,7 @@ public class MainActivity extends AppCompatActivity  {
         recognizerViewModel.getToastText().observe(this, this::displayToast);
 
         recognizerViewModel.getReady().observe(this, (b)->{
-            findViewById(R.id.speak_button).setEnabled(b);
+            findViewById(R.id.mic_btn_float).setEnabled(b);
         });
 
     }
@@ -385,6 +405,17 @@ public class MainActivity extends AppCompatActivity  {
         return false;
     }
 
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
 
     public TextView getInfoText() {
         return infoText;
@@ -405,6 +436,15 @@ public class MainActivity extends AppCompatActivity  {
 
     public void setCodeTextViewModel(CodeTextViewModel codeTextViewModel) {
         this.codeTextViewModel = codeTextViewModel;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedState) {
+        super.onSaveInstanceState(savedState);
+        savedState.putBoolean("keyboard", showKeyboard);
+        savedState.putBoolean("console", showConsole);
+        savedState.putBoolean("mic", micOn);
+
     }
 
     @Override
