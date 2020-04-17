@@ -466,6 +466,14 @@ public class MainActivity extends AppCompatActivity  {
         this.codeTextViewModel = codeTextViewModel;
     }
 
+    public ConsoleFragment getConsoleFragment() {
+        return consoleFragment;
+    }
+
+    public void setConsoleFragment(ConsoleFragment consoleFragment) {
+        this.consoleFragment = consoleFragment;
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);

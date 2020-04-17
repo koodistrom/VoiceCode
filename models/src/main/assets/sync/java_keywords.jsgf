@@ -27,7 +27,7 @@ grammar javaKeyWords;
 <testVariable> = test | x | arguments | hello | world;
 <symbol> = braces | [corner] brackets | semi-colon | linechange | plus | minus | quotes | space
 | dot | colon;
-<command> = undo | indent | forward | back | delete | print | redo;
+<command> = undo | indent | forward | back | delete | print | redo | logging;
 
 
 /*main rule read by the app*/

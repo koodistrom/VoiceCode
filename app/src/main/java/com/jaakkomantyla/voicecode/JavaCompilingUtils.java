@@ -3,25 +3,47 @@ package com.jaakkomantyla.voicecode;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 import dalvik.system.DexClassLoader;
 
 public class JavaCompilingUtils {
 
-    public static void compile(Context context, String path, Writer writer){
+    public static void compile(MainActivity context, String path, Writer writer){
         PrintWriter pw = new PrintWriter(writer, true);
         pw.println();
         File storage = context.getDir("all41", Context.MODE_PRIVATE);
 
+
+
+        try{
+            Field outField = System.class.getDeclaredField("out");
+            Field modifiersField = Field.class.getDeclaredField("accessFlags");
+            modifiersField.setAccessible(true);
+            modifiersField.set(outField, outField.getModifiers() & ~Modifier.FINAL);
+            outField.setAccessible(true);
+
+            outField.set(null, new PrintStream(new ConsoleOutPut(context)));
+
+        }catch(NoSuchFieldException e){
+            e.printStackTrace();
+        }catch(IllegalAccessException e){
+            e.printStackTrace();
+        }
 
         System.err.println("copying the android.jar from asssets to the internal storage to make it available to the compiler");
         pw.println("copying the android.jar from asssets to the internal storage to make it available to the compiler");
@@ -41,17 +63,7 @@ public class JavaCompilingUtils {
             dexWriter.close();
             bis.close();
 
-            /*
-            bis = new BufferedInputStream(context.getAssets().open("Test.java"));
-            dexWriter = new BufferedOutputStream(
-                    new FileOutputStream(storage.getAbsolutePath() + "/Test.java"));
-            byte[] bufa = new byte[BUF_SIZE];
-            int lena;
-            while((lena = bis.read(bufa, 0, BUF_SIZE)) > 0) {
-                dexWriter.write(bufa, 0, lena);
-            }
-            dexWriter.close();
-            bis.close();*/
+
         } catch (Exception e) {
             pw.println("Error while copying from assets: " + e.getMessage());
             System.err.println("Error while copying from assets: " + e.getMessage());
@@ -82,6 +94,14 @@ public class JavaCompilingUtils {
         try {
             Class libProviderClazz = cl.loadClass(className );
             Object instance = libProviderClazz.newInstance();
+            Class[] cArg = new Class[1];
+            cArg[0] = String[].class;
+            Method main = libProviderClazz.getDeclaredMethod("main", cArg);
+            Object[] args = new Object[1];
+            args[0] = new String[]{};
+            main.invoke(instance, args);
+
+
             System.err.println(instance.toString());
         } catch (Exception e) {
             System.err.println("Error while instanciating object: " + e.getMessage());

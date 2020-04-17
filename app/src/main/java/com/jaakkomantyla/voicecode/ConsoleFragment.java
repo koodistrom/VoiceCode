@@ -55,7 +55,7 @@ public class ConsoleFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        System.out.println("ö activity created called");
+
 
         mViewModel = ViewModelProviders.of(this).get(ConsoleViewModel.class);
         // TODO: Use the ViewModel
@@ -70,11 +70,9 @@ public class ConsoleFragment extends Fragment {
     }
 
     public void print(String str){
+        printed += str;
         if(textView!=null){
-            textView.setText(str);
-        }else{
-            printed = str;
+            textView.setText(printed);
         }
-
     }
 }

@@ -196,6 +196,10 @@ public class VoiceParser {
                     text = "instanceof";
                     break;
 
+                case "logging":
+                    text = "android.util.Log;";
+                    break;
+
                 default:
                     text = input;
             }
