@@ -9,25 +9,40 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The Voice parser takes the utterances voice recognizer has recognized and tells the app what to
+ * do.
+ */
 public class VoiceParser {
 
-    public List<String> createClass  = extractWords("create class");
+    private List<String> createClass  = extractWords("create class");
     private MainActivity context;
     private int lastTokenLength;
     private  boolean lastGoInBraces;
     private Logger logger;
     private String indent = "    ";
 
+    /**
+     * Instantiates a new Voice parser.
+     *
+     * @param context the context
+     */
     public VoiceParser(MainActivity context){
         logger = Logger.getLogger(VoiceParser.class.getName());
         this.context = context;
         lastTokenLength = 0;
         lastGoInBraces = false;
     }
-/*TODO:  syntax highlighting on the go, proper undo/redo,
+/*TODO:  syntax highlighting on the go
  */
 
-    public  void parseToCode(String  input){
+    /**
+     * Parses the given voice input or "utterance" to a app functionality or as a input to the
+     * code editor text.
+     *
+     * @param input the voice input as string from the voice recognizer
+     */
+    public  void parse(String  input){
         String text = "";
         boolean goInBraces = false;
         logger.log(Level.INFO, "input: " +input);
@@ -212,6 +227,12 @@ public class VoiceParser {
 
     }
 
+    /**
+     * Better number parsing I did't have time to implement
+     *
+     * @param input the voice input
+     * @return the number
+     */
     public int getNumber(String input) {
         int accumulator = 0;
         int total = 0;
@@ -321,7 +342,7 @@ public class VoiceParser {
 
 
 
-    public  Node parseCommand(String input) {
+    private  Node parseCommand(String input) {
         List<String> inputWords = extractWords(input);
         if(inputWords.subList(0, 1).equals(createClass)){
             ClassOrInterfaceDeclaration n = new ClassOrInterfaceDeclaration();

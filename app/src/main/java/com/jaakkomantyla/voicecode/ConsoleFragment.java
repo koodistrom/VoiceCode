@@ -2,29 +2,41 @@ package com.jaakkomantyla.voicecode;
 
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.method.ScrollingMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.CharArrayWriter;
-import java.io.Writer;
-
 public class ConsoleFragment extends Fragment {
 
     private ConsoleViewModel mViewModel;
     private TextView textView;
-    private String printed;
+    private SpannableStringBuilder printed;
+    private ConsoleOutPut soutOutPut;
+    private ConsoleOutPut errOutPut;
+    private JavaFileHandler fileHandler;
 
     public ConsoleFragment(){
         super();
-        printed = "";
+        printed = new SpannableStringBuilder();
+        soutOutPut = new ConsoleOutPut(this, "System.out: " ,Color.WHITE);
+        errOutPut = new ConsoleOutPut(this, "ERROR: " ,Color.RED);
+
+
+
     }
 
     public static ConsoleFragment newInstance() {
@@ -32,8 +44,15 @@ public class ConsoleFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        fileHandler = new JavaFileHandler(this);
+
+    }
+    @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
 
 
 
@@ -49,6 +68,7 @@ public class ConsoleFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         textView = getView().findViewById(R.id.console_text);
+        textView.setMovementMethod(new ScrollingMovementMethod());
         textView.setText(printed);
     }
 
@@ -69,10 +89,42 @@ public class ConsoleFragment extends Fragment {
         this.textView = textView;
     }
 
-    public void print(String str){
-        printed += str;
+    public void print(String str, int color){
+        addStringToSpann(printed, str, color);
         if(textView!=null){
-            textView.setText(printed);
+            textView.setText(printed , TextView.BufferType.SPANNABLE);
         }
+    }
+
+    public SpannableStringBuilder addStringToSpann(SpannableStringBuilder spannable, String str, int color){
+        spannable.append(str);
+        int end = spannable.length();
+        int start = end - str.length();
+        spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannable;
+    }
+
+    public ConsoleOutPut getSoutOutPut() {
+        return soutOutPut;
+    }
+
+    public void setSoutOutPut(ConsoleOutPut soutOutPut) {
+        this.soutOutPut = soutOutPut;
+    }
+
+    public ConsoleOutPut getErrOutPut() {
+        return errOutPut;
+    }
+
+    public void setErrOutPut(ConsoleOutPut errOutPut) {
+        this.errOutPut = errOutPut;
+    }
+
+    public JavaFileHandler getFileHandler() {
+        return fileHandler;
+    }
+
+    public void setFileHandler(JavaFileHandler fileHandler) {
+        this.fileHandler = fileHandler;
     }
 }

@@ -410,7 +410,7 @@ public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
         String str = spannable.toString();
         int start = calculatePosInChars(str, n.getBegin().get());
         int end = start+numberOfChars;
-        System.out.println("position start"+n.getBegin().get()+ " end " +n.getEnd().get() );
+        //System.out.println("position start"+n.getBegin().get()+ " end " +n.getEnd().get() );
         spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
@@ -418,7 +418,7 @@ public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
         String str = spannable.toString();
         int start = calculatePosInChars(str, n.getBegin().get());
         int end = calculatePosInChars(str, n.getEnd().get())+1;
-        System.out.println("position start"+n.getBegin().get()+ " end " +n.getEnd().get() );
+        //System.out.println("position start"+n.getBegin().get()+ " end " +n.getEnd().get() );
         spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 

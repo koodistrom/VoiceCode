@@ -18,14 +18,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ToggleButton;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaakkomantyla.voicecode.VoiceParsingUtils.VoiceParser;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity  {
     private ConsoleFragment consoleFragment;
     private Writer writer;
     private FileUtils fu;
-
+    private String runThis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,13 +227,16 @@ public class MainActivity extends AppCompatActivity  {
                 String path = fu.getPath(fileUri);
 
                 if(fragmentManager.findFragmentByTag("console")==null){
-
+                    runThis=path;
                     consoleTgl.callOnClick();
 
+                }else{
+                    consoleFragment.getFileHandler().compileAndRun(path);
+                    
                 }
 
-                JavaCompilingUtils.compile(this, path, writer);
-                consoleFragment.print(writer.toString());
+                //JavaFileHandler.compile(this, path, writer);
+
             }else{
                 displayToast("no file selected (maybe you forgot to save?)");
             }
@@ -244,7 +245,7 @@ public class MainActivity extends AppCompatActivity  {
 
     private void createObservers(){
         recognizerViewModel.getUtterance().observe(this, (utterance)->{
-            voiceParser.parseToCode(utterance);
+            voiceParser.parse(utterance);
         });
 
         recognizerViewModel.getInfo().observe(this, (info)->{
@@ -327,7 +328,7 @@ public class MainActivity extends AppCompatActivity  {
                 uri = resultData.getData();
                 fu = new FileUtils(this);
                 String path = fu.getPath(uri);
-                JavaCompilingUtils.compile(this, path, writer);
+                consoleFragment.getFileHandler().compileAndRun(path);
 
             }
         }else if (requestCode == DELETE && resultCode == Activity.RESULT_OK) {
@@ -472,6 +473,14 @@ public class MainActivity extends AppCompatActivity  {
 
     public void setConsoleFragment(ConsoleFragment consoleFragment) {
         this.consoleFragment = consoleFragment;
+    }
+
+    public String getRunThis() {
+        return runThis;
+    }
+
+    public void setRunThis(String runThis) {
+        this.runThis = runThis;
     }
 
     @Override

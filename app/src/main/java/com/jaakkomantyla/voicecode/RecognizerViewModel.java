@@ -16,10 +16,21 @@ import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
+/**
+ * The Recognizer view model holds the voice recognizing functionality. It is in view model to stop
+ * it from being destroyed on screen orientation change. Based on:
+ * https://github.com/cmusphinx/pocketsphinx-android-demo
+ */
 public class RecognizerViewModel extends AndroidViewModel implements Runnable, RecognitionListener {
 
     private SpeechRecognizer recognizer;
+    /**
+     * The constant JAVA_STATEMENT.
+     */
     public static final String JAVA_STATEMENT = "java";
+    /**
+     * The constant PHONE_SEARCH.
+     */
     public static final String PHONE_SEARCH = "phone";
     private HashMap<String, Integer> captions;
 
@@ -28,7 +39,13 @@ public class RecognizerViewModel extends AndroidViewModel implements Runnable, R
     private MutableLiveData<String> info;
     private MutableLiveData<Boolean> ready;
 
-    //TODO: fix the delay in recognizing start
+    /**
+     * Instantiates a new Recognizer view model. Runs the setup process of the recognizer in
+     * a separate thread.
+     *
+     * @param application the application
+     */
+//TODO: fix the delay in recognizing start
     public RecognizerViewModel(Application application){
         super(application);
 
@@ -92,6 +109,13 @@ public class RecognizerViewModel extends AndroidViewModel implements Runnable, R
 
     }
 
+    /**
+     * Switch search mode the recognizer uses. I had time to implement only the basic java keyword
+     * search, but there could be own searches for class names, app commands etc. Method stops
+     * recognizer and restarts listening the new search
+     *
+     * @param searchName the name of the search to start listening
+     */
     public void switchSearch(String searchName) {
 
         recognizer.stop();
@@ -146,42 +170,92 @@ public class RecognizerViewModel extends AndroidViewModel implements Runnable, R
 
     }
 
+    /**
+     * Gets utterance.
+     *
+     * @return the utterance
+     */
     public MutableLiveData<String> getUtterance() {
         return utterance;
     }
 
+    /**
+     * Sets utterance.
+     *
+     * @param utterance the utterance
+     */
     public void setUtterance(MutableLiveData<String> utterance) {
         this.utterance = utterance;
     }
 
+    /**
+     * Gets toast text.
+     *
+     * @return the toast text
+     */
     public MutableLiveData<String> getToastText() {
         return toastText;
     }
 
+    /**
+     * Sets toast text.
+     *
+     * @param toastText the toast text
+     */
     public void setToastText(MutableLiveData<String> toastText) {
         this.toastText = toastText;
     }
 
+    /**
+     * Gets info.
+     *
+     * @return the info
+     */
     public MutableLiveData<String> getInfo() {
         return info;
     }
 
+    /**
+     * Sets info.
+     *
+     * @param info the info
+     */
     public void setInfo(MutableLiveData<String> info) {
         this.info = info;
     }
 
+    /**
+     * Gets ready.
+     *
+     * @return the ready
+     */
     public MutableLiveData<Boolean> getReady() {
         return ready;
     }
 
+    /**
+     * Sets ready.
+     *
+     * @param ready the ready
+     */
     public void setReady(MutableLiveData<Boolean> ready) {
         this.ready = ready;
     }
 
+    /**
+     * Gets recognizer.
+     *
+     * @return the recognizer
+     */
     public SpeechRecognizer getRecognizer() {
         return recognizer;
     }
 
+    /**
+     * Sets recognizer.
+     *
+     * @param recognizer the recognizer
+     */
     public void setRecognizer(SpeechRecognizer recognizer) {
         this.recognizer = recognizer;
     }
