@@ -20,25 +20,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+/**
+ * The Console fragment contains a text view that displays out put and errors created when user
+ * compiles and runs a java file using the app.
+ */
 public class ConsoleFragment extends Fragment {
 
-    private ConsoleViewModel mViewModel;
     private TextView textView;
     private SpannableStringBuilder printed;
     private ConsoleOutPut soutOutPut;
     private ConsoleOutPut errOutPut;
     private JavaFileHandler fileHandler;
 
+    /**
+     * Instantiates a new Console fragment.
+     */
     public ConsoleFragment(){
         super();
         printed = new SpannableStringBuilder();
         soutOutPut = new ConsoleOutPut(this, "System.out: " ,Color.WHITE);
         errOutPut = new ConsoleOutPut(this, "ERROR: " ,Color.RED);
-
-
-
     }
 
+    /**
+     * New instance console fragment.
+     *
+     * @return the console fragment
+     */
     public static ConsoleFragment newInstance() {
         return new ConsoleFragment();
     }
@@ -70,6 +78,13 @@ public class ConsoleFragment extends Fragment {
         textView = getView().findViewById(R.id.console_text);
         textView.setMovementMethod(new ScrollingMovementMethod());
         textView.setText(printed);
+        String openedFile = ((MainActivity)getActivity()).getRunThis();
+        if(openedFile != null){
+            fileHandler.compileAndRun(openedFile);
+            openedFile = null;
+        }
+
+
     }
 
     @Override
@@ -77,18 +92,32 @@ public class ConsoleFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
 
-        mViewModel = ViewModelProviders.of(this).get(ConsoleViewModel.class);
-        // TODO: Use the ViewModel
     }
 
+    /**
+     * Gets text view.
+     *
+     * @return the text view
+     */
     public TextView getTextView() {
         return textView;
     }
 
+    /**
+     * Sets text view.
+     *
+     * @param textView the text view
+     */
     public void setTextView(TextView textView) {
         this.textView = textView;
     }
 
+    /**
+     * Prints text to the console using Spannable. Spannable makes it possible to use different colors.
+     *
+     * @param str   the string to print
+     * @param color the color to print with
+     */
     public void print(String str, int color){
         addStringToSpann(printed, str, color);
         if(textView!=null){
@@ -96,7 +125,8 @@ public class ConsoleFragment extends Fragment {
         }
     }
 
-    public SpannableStringBuilder addStringToSpann(SpannableStringBuilder spannable, String str, int color){
+
+    private SpannableStringBuilder addStringToSpann(SpannableStringBuilder spannable, String str, int color){
         spannable.append(str);
         int end = spannable.length();
         int start = end - str.length();
@@ -104,26 +134,56 @@ public class ConsoleFragment extends Fragment {
         return spannable;
     }
 
+    /**
+     * Gets sout out put.
+     *
+     * @return the sout out put
+     */
     public ConsoleOutPut getSoutOutPut() {
         return soutOutPut;
     }
 
+    /**
+     * Sets sout out put.
+     *
+     * @param soutOutPut the sout out put
+     */
     public void setSoutOutPut(ConsoleOutPut soutOutPut) {
         this.soutOutPut = soutOutPut;
     }
 
+    /**
+     * Gets err out put.
+     *
+     * @return the err out put
+     */
     public ConsoleOutPut getErrOutPut() {
         return errOutPut;
     }
 
+    /**
+     * Sets err out put.
+     *
+     * @param errOutPut the err out put
+     */
     public void setErrOutPut(ConsoleOutPut errOutPut) {
         this.errOutPut = errOutPut;
     }
 
+    /**
+     * Gets file handler.
+     *
+     * @return the file handler
+     */
     public JavaFileHandler getFileHandler() {
         return fileHandler;
     }
 
+    /**
+     * Sets file handler.
+     *
+     * @param fileHandler the file handler
+     */
     public void setFileHandler(JavaFileHandler fileHandler) {
         this.fileHandler = fileHandler;
     }

@@ -6,10 +6,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class for single voice input: utterance can be one word or multible. Aren't used in the current
+ * implementation.
+ */
 public class Utterance {
-    String text;
-    LinkedList<String> words;
 
+    private String text;
+
+    private LinkedList<String> words;
+
+    /**
+     * Instantiates a new Utterance.
+     *
+     * @param text the voice input as text.
+     */
     public Utterance(String text){
         this.text = text;
         words = new LinkedList<>();
@@ -39,18 +50,41 @@ public class Utterance {
         return getWords().equals(utterance.getWords());
     }
 
+    /**
+     * Contains boolean.
+     *
+     * @param word the word
+     * @return the boolean
+     */
     public boolean contains(String word){
         return getWords().contains(word);
     }
 
+    /**
+     * returns part of utterance as list.
+     *
+     * @param start           the index of first word
+     * @param endNotInclusive the index of last word not inclusive
+     * @return the list
+     */
     public List<String> part(int start, int endNotInclusive){
         return words.subList(start,endNotInclusive);
     }
 
+    /**
+     * Gets words of the utterance as list.
+     *
+     * @return the words
+     */
     public LinkedList<String> getWords() {
         return words;
     }
 
+    /**
+     * Sets words from list to utterance.
+     *
+     * @param words the words
+     */
     public void setWords(LinkedList<String> words) {
         this.words = words;
     }

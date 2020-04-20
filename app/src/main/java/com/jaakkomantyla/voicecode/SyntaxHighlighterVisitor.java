@@ -66,9 +66,16 @@ import com.github.javaparser.printer.PrettyPrinterConfiguration;
 
 import java.util.Scanner;
 
+/**
+ * Syntax highlighter visitor extends VoidVisitorAdapter<Void> and is used to highlight syntax
+ * of java file parsed with com.github.javaparser.
+ */
 public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
-    CodeEditText codeEditText;
-    Spannable codeSpannable;
+
+    private CodeEditText codeEditText;
+
+    private Spannable codeSpannable;
+
     private int annotationColor;
     private int methodColor;
     private int keywordColor;
@@ -77,6 +84,11 @@ public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
     private int numberColor;
     private int commentColor;
 
+    /**
+     * Instantiates a new Syntax highlighter visitor. Assigns colors for different parts of code.
+     *
+     * @param codeEditText the CodeEditText view the code is displayed in.
+     */
     public SyntaxHighlighterVisitor(CodeEditText codeEditText){
         this.codeEditText = codeEditText;
         codeSpannable = new SpannableString(codeEditText.getText());
@@ -92,6 +104,7 @@ public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
 
     @Override
     public void visit(CompilationUnit cu, Void arg) {
+
         super.visit(cu, arg);
         codeEditText.setText(codeSpannable , TextView.BufferType.SPANNABLE);
     }
@@ -403,10 +416,7 @@ public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
 
 
 
-
-
-
-    public void highlightNodeStart( Node n,int numberOfChars, Spannable spannable, int color){
+    private void highlightNodeStart( Node n,int numberOfChars, Spannable spannable, int color){
         String str = spannable.toString();
         int start = calculatePosInChars(str, n.getBegin().get());
         int end = start+numberOfChars;
@@ -414,7 +424,8 @@ public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
         spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    public void highlightNode( Node n, Spannable spannable, int color){
+
+    private void highlightNode( Node n, Spannable spannable, int color){
         String str = spannable.toString();
         int start = calculatePosInChars(str, n.getBegin().get());
         int end = calculatePosInChars(str, n.getEnd().get())+1;
@@ -422,20 +433,22 @@ public class SyntaxHighlighterVisitor extends VoidVisitorAdapter<Void> {
         spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    public <N extends Node> void highlightName(NodeWithName<N> n, Spannable spannable, int color){
+
+    private <N extends Node> void highlightName(NodeWithName<N> n, Spannable spannable, int color){
         highlightNode( n.getName(), spannable, color);
     }
 
-    public <N extends Node> void highlightSimpleName(NodeWithSimpleName<N> n, Spannable spannable, int color){
+
+    private <N extends Node> void highlightSimpleName(NodeWithSimpleName<N> n, Spannable spannable, int color){
         highlightNode( n.getName(), spannable, color);
     }
 
-    public void highlightRange( int start, int end, Spannable spannable, int color){
+    private void highlightRange( int start, int end, Spannable spannable, int color){
 
         spannable.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    public void highlightToken(JavaToken token, Spannable spannable, int color){
+    private void highlightToken(JavaToken token, Spannable spannable, int color){
         String str = spannable.toString();
         int start = calculatePosInChars(str, token.getRange().get().begin);
         int end = calculatePosInChars(str,  token.getRange().get().end)+1;

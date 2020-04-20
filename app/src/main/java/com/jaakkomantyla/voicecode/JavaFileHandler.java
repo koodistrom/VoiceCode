@@ -16,16 +16,26 @@ import java.lang.reflect.Modifier;
 
 import dalvik.system.DexClassLoader;
 
+/**
+ * Java file handler holds functionnality for compiling and running java files on android devices.
+ * It uses a compiler from eclipse to compile the files and reflection to check if the
+ * compiled file has main method to run
+ */
 public class JavaFileHandler {
 
-    ConsoleFragment consoleFragment;
-    Writer writer;
-    ConsoleOutPut soutOutPut;
-    ConsoleOutPut errOutPut;
-    Context context;
-    org.eclipse.jdt.internal.compiler.batch.Main eclipseCompiler;
-    File storage;
+    private ConsoleFragment consoleFragment;
+    private Writer writer;
+    private ConsoleOutPut soutOutPut;
+    private ConsoleOutPut errOutPut;
+    private Context context;
+    private org.eclipse.jdt.internal.compiler.batch.Main eclipseCompiler;
+    private File storage;
 
+    /**
+     * Instantiates a new Java file handler.
+     *
+     * @param consoleFragment the console fragment in which the possible output of files is displayed
+     */
     public JavaFileHandler(ConsoleFragment consoleFragment){
         this.consoleFragment = consoleFragment;
         this.soutOutPut = consoleFragment.getSoutOutPut();
@@ -37,6 +47,11 @@ public class JavaFileHandler {
 
     }
 
+    /**
+     * Compile and run compiles and runs the file in a given path.
+     *
+     * @param path the path
+     */
     public void compileAndRun(String path){
         compile(path);
         File javaFile = new File(path);
@@ -105,6 +120,11 @@ public class JavaFileHandler {
 
     }
 
+    /**
+     * Compile compiles the file in given path.
+     *
+     * @param path the path
+     */
     public void compile(String path){
         eclipseCompiler.compile(new String[] {"-classpath", storage.getAbsolutePath()+"/android.jar",
                 path});
@@ -116,6 +136,12 @@ public class JavaFileHandler {
         com.android.dx.command.Main.main(new String[] {"--dex", "--output=" + storage.getAbsolutePath() + "/Dexified.zip", classPath});
     }
 
+    /**
+     * Run runs the class file with the given name. It must be previously compilet and dexified to the
+     * destination that the app uses.
+     *
+     * @param className the class name with out .class ending
+     */
     public void run(String className){
 
         System.out.println("instantiating DexClassLoader, loading class and invoking main method");

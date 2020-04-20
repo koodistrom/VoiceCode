@@ -73,7 +73,7 @@ public class RecognizerViewModel extends AndroidViewModel implements Runnable, R
             Assets assets = new Assets(appReference.get());
             File assetDir = assets.syncAssets();
             setupRecognizer(assetDir);
-            initInfo = "Recognizer initialized";
+            initInfo = "Recognizer initialized turn mic on by pushing the mic button";
         } catch (IOException e) {
             System.out.println(e);
             initInfo = "Failed to init recognizer " + e;
@@ -85,14 +85,13 @@ public class RecognizerViewModel extends AndroidViewModel implements Runnable, R
 
 
     private void setupRecognizer(File assetsDir) throws IOException {
-        // The recognizer can be configured to perform multiple searches
-        // of different kind and switch between them
+
 
         recognizer = SpeechRecognizerSetup.defaultSetup()
                 .setAcousticModel(new File(assetsDir, "en-us-ptm"))
                 .setDictionary(new File(assetsDir, "java.dict"))
 
-                .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
+                //.setRawLogDir(assetsDir)
 
                 .getRecognizer();
         recognizer.addListener(this);

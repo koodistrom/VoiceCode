@@ -2,11 +2,13 @@ package com.jaakkomantyla.voicecode;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.OpenableColumns;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -40,7 +42,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
 
-//TODO: fix sub directory files can't be loaded bug, file info rotation bug, fix keyboard covers buttons
+/**
+ * The Main activity of Voice Code app. App runs on Android devices and user can use it to
+ * write java code with voice commands & compile and run java files.
+ */
+
 public class MainActivity extends AppCompatActivity  {
 
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -62,9 +68,11 @@ public class MainActivity extends AppCompatActivity  {
     private Button deleteButton;
     private HashMap<String, Integer> captions;
     private RecognizerViewModel recognizerViewModel;
-    private CodeTextViewModel codeTextViewModel;
+    /**
+     * The constant JAVA_STATEMENT. string used as a java keyword searches name
+     */
     public static final String JAVA_STATEMENT = "java";
-    public static final String PHONE_SEARCH = "phone";
+
     private VoiceParser voiceParser;
     private String fileName = "gg.java";
     private Uri fileUri;
@@ -88,6 +96,7 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
         codeText = findViewById(R.id.code_text);
         codeText.setShowSoftInputOnFocus(false);
+        codeText.setMovementMethod(new ScrollingMovementMethod());
         infoText = findViewById(R.id.info_text);
 
         voiceParser = new VoiceParser(this);
@@ -96,7 +105,6 @@ public class MainActivity extends AppCompatActivity  {
 
         fu = new FileUtils(this);
 
-        codeTextViewModel = new ViewModelProvider(this).get(CodeTextViewModel.class);
         consoleFragment = new ConsoleFragment();
         setupSaveButton();
         setupOpenButton();
@@ -126,8 +134,11 @@ public class MainActivity extends AppCompatActivity  {
     private void setKeyBoardVisible(boolean showKeyboard){
         this.showKeyboard = showKeyboard;
         codeText.setShowSoftInputOnFocus(showKeyboard);
+
         if (showKeyboard) {
             keyboardTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_keyboard_hide_24px));
+            InputMethodManager imm = (InputMethodManager)   getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         } else {
             keyboardTgl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_keyboard_24px));
             hideKeyboard(this);
@@ -227,7 +238,7 @@ public class MainActivity extends AppCompatActivity  {
                 String path = fu.getPath(fileUri);
 
                 if(fragmentManager.findFragmentByTag("console")==null){
-                    runThis=path;
+                    runThis = path;
                     consoleTgl.callOnClick();
 
                 }else{
@@ -259,6 +270,11 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    /**
+     * Displays a toast with a given text.
+     *
+     * @param text the text
+     */
     public void displayToast(String text){
         Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
         toast.show();
@@ -370,6 +386,11 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    /**
+     * Opens file content to codeText view
+     *
+     * @param uri the uri of the file to read
+     */
     public void readFromFile(@NonNull Uri uri){
 
 
@@ -382,7 +403,7 @@ public class MainActivity extends AppCompatActivity  {
                 data = data + strLine + "\n";
             }
             in.close();
-            codeText.setText(data);
+            codeText.openNew(data);
 
 
             setFileNameFromUri(uri);
@@ -434,7 +455,8 @@ public class MainActivity extends AppCompatActivity  {
         return false;
     }
 
-    public static void hideKeyboard(Activity activity) {
+
+    private static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
@@ -446,39 +468,69 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
+    /**
+     * Gets info text displayed in the top of the activity.
+     *
+     * @return the info text
+     */
     public TextView getInfoText() {
         return infoText;
     }
 
 
+    /**
+     * Gets code text - the main text view on the activity that holds the code currently edited.
+     *
+     * @return the code text
+     */
     public CodeEditText getCodeText() {
         return codeText;
     }
 
+    /**
+     * Sets code text - the main text view on the activity that holds the code currently edited..
+     *
+     * @param codeText the code text
+     */
     public void setCodeText(CodeEditText codeText) {
         this.codeText = codeText;
     }
 
-    public CodeTextViewModel getCodeTextViewModel() {
-        return codeTextViewModel;
-    }
 
-    public void setCodeTextViewModel(CodeTextViewModel codeTextViewModel) {
-        this.codeTextViewModel = codeTextViewModel;
-    }
-
+    /**
+     * Gets console fragment - the fragment that shows output of compiling and running a java file.
+     *
+     * @return the console fragment
+     */
     public ConsoleFragment getConsoleFragment() {
         return consoleFragment;
     }
 
+    /**
+     * Sets console fragment - the fragment that shows output of compiling and running a java file.
+     *
+     * @param consoleFragment the console fragment
+     */
     public void setConsoleFragment(ConsoleFragment consoleFragment) {
         this.consoleFragment = consoleFragment;
     }
 
+    /**
+     * Gets run this - a path to a java file to be compiled and run once the console fragment is
+     * ready.
+     *
+     * @return the run this
+     */
     public String getRunThis() {
         return runThis;
     }
 
+    /**
+     * Sets run this - a path to a java file to be compiled and run once the console fragment is
+     * ready.
+     *
+     * @param runThis the run this
+     */
     public void setRunThis(String runThis) {
         this.runThis = runThis;
     }

@@ -13,20 +13,26 @@ import java.util.Stack;
 
 import androidx.annotation.NonNull;
 
-//TODO: fix undo/redo stacks emptying on rotate
+/**
+ * Class extending Android EditText holding special methods and fields for displaying java source code.
+ */
+
 public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     private Rect rect;
     private Paint paint;
-    private CompilationUnit testParse;
+    private CompilationUnit parsed;
     private SyntaxHighlighterVisitor highlighterVisitor;
     private Stack<TextInput> undoStack;
     private Stack<TextInput> redoStack;
 
-
-
-
-        public CodeEditText(Context context, AttributeSet attrs) {
+    /**
+     * Instantiates a new Code edit text.
+     *
+     * @param context the context
+     * @param attrs   the attrs
+     */
+    public CodeEditText(Context context, AttributeSet attrs) {
             super(context, attrs);
             rect = new Rect();
             paint = new Paint();
@@ -38,12 +44,8 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
             undoStack = new Stack<>();
 
 
-            String testCode = context.getString(R.string.test_code);
-            testParse = StaticJavaParser.parse(testCode);
-            this.setText(testCode);
+            openNew(context.getString (R. string.test_code));
 
-            highlighterVisitor = new SyntaxHighlighterVisitor(this);
-            highlighterVisitor.visit(testParse, null);
 
         }
 
@@ -57,7 +59,30 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
             super.onDraw(canvas);
         }
 
-        public void inputText (String text){
+    /**
+     * Open new is called when displaying source code from new java file. Method highlights the
+     * syntax and displays the code on view.
+     *
+     * @param textFromFile the text from file
+     */
+    public void openNew(String textFromFile){
+            setText(textFromFile);
+            try {
+                parsed = StaticJavaParser.parse(textFromFile);
+                highlighterVisitor = new SyntaxHighlighterVisitor(this);
+                highlighterVisitor.visit(parsed, null);
+            }catch (Exception e){
+                System.err.println(e);
+            }
+        }
+
+    /**
+     * Input text. Is called when user inputs new text to the view. Method adds new text and adds
+     * it to undo stack so it can be undone later if needed.
+     *
+     * @param text the text
+     */
+    public void inputText (String text){
             addToCursorLocation(text);
             undoStack.push(new TextInput(text, getSelectionStart()-text.length()));
             redoStack.empty();
@@ -66,7 +91,10 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
             }
         }
 
-        public void undo(){
+    /**
+     * Undo.
+     */
+    public void undo(){
             if(!undoStack.isEmpty()) {
                 TextInput undone = undoStack.pop();
                 if (!undone.isDeleted) {
@@ -79,7 +107,11 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
                 redoStack.push(undone);
             }
         }
-        public void redo(){
+
+    /**
+     * Redo.
+     */
+    public void redo(){
 
             if(!redoStack.isEmpty()) {
                 TextInput redone = redoStack.pop();
@@ -93,7 +125,10 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
             }
         }
 
-        public void delete(){
+    /**
+     * Delete.
+     */
+    public void delete(){
             String deleted = String.valueOf(getText().charAt(getSelectionStart()-1));
             undoStack.push(new TextInput(deleted, getSelectionStart()-1, true));
             getText().delete(getSelectionStart()-1, getSelectionStart());
@@ -107,6 +142,12 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
         getText().replace(Math.min(start, end), Math.max(start, end), text, 0, text.length());
     }
 
+    /**
+     * Moves cursor relative to current position. Used for example when adding brackets to
+     * move the cursor afterwards inside them automatically.
+     *
+     * @param steps how much to move the cursor
+     */
     public void moveCursorRelativeToCurrentPos(int steps){
         int currentPos = getSelectionStart();
         if(currentPos+steps<length() && currentPos+steps>=0){
@@ -119,6 +160,9 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
         getText().delete(currentPos-numOfChars+offset, currentPos+offset);
     }
 
+    /**
+     * Zeroes the view by setting text and undo and redo stacks empty.
+     */
     public void zero(){
         setText("");
         redoStack = new Stack<>();
@@ -126,11 +170,34 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     }
 
+    /**
+     * Text input is A class that undo and redo stacks use. It holds information of the content
+     * and location of each input.
+     */
     class TextInput{
+        /**
+         * The Location from the start of the text as char index.
+         */
         int location;
+        /**
+         * The Text inputted.
+         */
         String text;
+        /**
+         * The Length of the text.
+         */
         int length;
+        /**
+         * The Is deleted boolean is true if user deleted text instead of adding.
+         */
         boolean isDeleted;
+
+        /**
+         * Instantiates a new Text input.
+         *
+         * @param text     the text
+         * @param location the location
+         */
         public TextInput(String text, int location){
             this.text = text;
             this.location = location;
@@ -138,6 +205,13 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
             this.isDeleted = false;
         }
 
+        /**
+         * Instantiates a new Text input.
+         *
+         * @param text      the text
+         * @param location  the location
+         * @param isDeleted the is deleted
+         */
         public TextInput(String text, int location, boolean isDeleted){
             this.text = text;
             this.location = location;
@@ -146,35 +220,74 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
         }
 
 
-
+        /**
+         * Gets location.
+         *
+         * @return the location
+         */
         public int getLocation() {
             return location;
         }
 
+        /**
+         * Sets location.
+         *
+         * @param location the location
+         */
         public void setLocation(int location) {
             this.location = location;
         }
 
+        /**
+         * Gets text.
+         *
+         * @return the text
+         */
         public String getText() {
             return text;
         }
 
+        /**
+         * Sets text.
+         *
+         * @param text the text
+         */
         public void setText(String text) {
             this.text = text;
         }
 
+        /**
+         * Gets length.
+         *
+         * @return the length
+         */
         public int getLength() {
             return length;
         }
 
+        /**
+         * Sets length.
+         *
+         * @param length the length
+         */
         public void setLength(int length) {
             this.length = length;
         }
 
+        /**
+         * Is deleted boolean.
+         *
+         * @return the boolean
+         */
         public boolean isDeleted() {
             return isDeleted;
         }
 
+        /**
+         * Sets deleted.
+         *
+         * @param deleted the deleted
+         */
         public void setDeleted(boolean deleted) {
             isDeleted = deleted;
         }

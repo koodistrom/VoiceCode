@@ -57,6 +57,7 @@
         android:background="@color/colorBackground"
         android:textColor="@android:color/white"
         android:gravity="start"
+        android:scrollbars = "vertical"
         android:id="@+id/code_text"/>
 
 
